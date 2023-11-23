@@ -3,6 +3,10 @@ package com.mycompany.productpage;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumn;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 
 public class Products {
 
@@ -65,7 +69,8 @@ public class Products {
         addRowToTable("Dapol", "LHT-626 Suburban B 4 Coach Set BR London #34 Lined Maroon", "M00318", 885.60);
         addRowToTable("Dapol", "LHT 633 No Division & Unnumbered GWR C & C Twin Cities", "M00729", 286.60);
         addRowToTable("Dapol", "2P-003-015 N Gauge B Set Coach Pack BR Crimson 66461 & 6464", "M00927", 37.80);
-    
+        // Add more sample data...
+
         // Make the frame visible
         frame.setVisible(true);
     }
@@ -73,7 +78,42 @@ public class Products {
     private void addRowToTable(String brand, String name, String code, double price) {
         Object[] rowData = {brand, name, code, price};
         model.addRow(rowData);
+
+        // Insert into the database
+        insertIntoDatabase(brand, name, code, price);
     }
+
+    private void insertIntoDatabase(String brand, String name, String code, double price) {
+        // Database connection parameters
+        try {
+        Class.forName("com.mysql.cj.jdbc.Driver");
+        } catch (ClassNotFoundException e) {
+        e.printStackTrace();
+    }
+
+        String url = "jdbc:mysql://stusql.dcs.shef.ac.uk/DCS%20DB";
+        String username = "team056";
+        String password = "ohr4Kahbi";
+
+        try (Connection connection = DriverManager.getConnection(url, username, password)) {
+            String query = "INSERT INTO products (brand, name, code, price) VALUES (?, ?, ?, ?)";
+            try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+                preparedStatement.setString(1, brand);
+                preparedStatement.setString(2, name);
+                preparedStatement.setString(3, code);
+                preparedStatement.setDouble(4, price);
+                int rowsAffected = preparedStatement.executeUpdate();
+                if (rowsAffected > 0) {
+                    System.out.println("Insert successful. Rows affected: " + rowsAffected);
+            }   else {
+                    System.out.println("Insert failed. No rows affected.");
+            }   
+        }
+    } catch (SQLException e) {
+        System.err.println("SQLException: " + e.getMessage());
+        e.printStackTrace(); // 打印异常堆栈信息
+    }
+}
 
     public static void main(String[] args) {
         SwingUtilities.invokeLater(Products::new);
