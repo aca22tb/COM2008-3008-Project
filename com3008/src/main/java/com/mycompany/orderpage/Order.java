@@ -323,7 +323,7 @@ public class Order extends JFrame implements ActionListener {
 
     public Order() {
         setTitle("Product Management and Shopping Cart");
-        setSize(600, 400);
+        setSize(900, 500);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
 
         label2 = new JLabel("Product Name: ");
@@ -416,7 +416,7 @@ public class Order extends JFrame implements ActionListener {
 
         JFrame frame = new JFrame("View Products");
         frame.add(scrollPane);
-        frame.setSize(800, 400);
+        frame.setSize(900, 500);
         frame.setVisible(true);
     }
 

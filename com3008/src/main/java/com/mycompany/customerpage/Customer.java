@@ -10,10 +10,11 @@ import java.awt.event.ActionListener;
 
 public class Customer extends JFrame {
     private JButton orderButton, productButton, profileButton, searchButton, logoutButton;
+    private JTextField searchField;
 
     public Customer() {
         setTitle("User Page");
-        setSize(400, 200);
+        setSize(900, 500);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
 
         orderButton = new JButton("Order Page");
@@ -21,6 +22,8 @@ public class Customer extends JFrame {
         profileButton = new JButton("Profile Page");
         searchButton = new JButton("Search");
         logoutButton = new JButton("Log Out");
+
+        searchField = new JTextField(20);
 
         orderButton.addActionListener(new ActionListener() {
             @Override
@@ -70,12 +73,24 @@ public class Customer extends JFrame {
             }
         });
 
-        setLayout(new FlowLayout());
-        add(orderButton);
-        add(productButton);
-        add(profileButton);
-        add(searchButton);
-        add(logoutButton);
+        JPanel topPanel = new JPanel(new BorderLayout());
+        topPanel.add(profileButton, BorderLayout.EAST);
+        JPanel searchPanel = new JPanel();
+        searchPanel.add(searchField);
+        searchPanel.add(searchButton);
+        topPanel.add(searchPanel, BorderLayout.CENTER);
+
+        JPanel bottomPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+        bottomPanel.add(logoutButton);
+
+        setLayout(new BorderLayout());
+        add(topPanel, BorderLayout.NORTH);
+        add(bottomPanel, BorderLayout.SOUTH);
+
+        JPanel pagesPanel = new JPanel(new GridLayout(10, 1));
+        pagesPanel.add(orderButton);
+        pagesPanel.add(productButton);
+        add(pagesPanel, BorderLayout.CENTER);
 
         setVisible(true);
     }
