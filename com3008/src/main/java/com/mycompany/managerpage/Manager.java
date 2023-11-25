@@ -9,7 +9,7 @@ import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.List;
 
-// Assume you have a User class with a role field
+//Creating a User class with a role field
 class User {
     private String username;
     private String role;
@@ -31,18 +31,20 @@ class User {
         this.role = role;
     }
 
-    // Other getters and setters...
 }
 
 public class Manager extends JFrame {
 
+    //Buttons for various actions
     private JButton createRecordButton, viewEditButton, profileButton, viewOrderButton, logoutButton, promoteButton, demoteButton;
 
+    //Set Frame properties
     public Manager() {
         setTitle("Manager Page");
         setSize(900, 500);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
 
+        //Initialising buttons and setting their actions
         createRecordButton = new JButton("Create product record");
         viewEditButton = new JButton("View and Edit product record");
         profileButton = new JButton("Profile Page");
@@ -54,6 +56,7 @@ public class Manager extends JFrame {
         createRecordButton.setPreferredSize(new Dimension(50, 40));
         viewEditButton.setPreferredSize(new Dimension(150, 40));
 
+        //Attaching action listeners to buttons for specific actions
         createRecordButton.addActionListener(e -> JOptionPane.showMessageDialog(Manager.this, "Creating Product Record..."));
         viewEditButton.addActionListener(e -> JOptionPane.showMessageDialog(Manager.this, "View/Edit Product Record..."));
         viewOrderButton.addActionListener(e -> JOptionPane.showMessageDialog(Manager.this, "Opening View Order..."));
@@ -61,13 +64,14 @@ public class Manager extends JFrame {
         profileButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                showProfileDialog();
-            }
+                //Show profile dialogue
+                showProfileDialog();}
         });
 
         logoutButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                //Prompt user for confirmation before logging out
                 Object[] options = {"Yes", "No"};
                 int option = JOptionPane.showOptionDialog(
                         Manager.this,
@@ -80,16 +84,18 @@ public class Manager extends JFrame {
                         options[0]);
 
                 if (option == JOptionPane.YES_OPTION) {
+                    //Show a message, dispose of the current frame and open the login frame
                     JOptionPane.showMessageDialog(Manager.this, "Logging out...");
                     dispose();
                     new LoginFrame().setVisible(true);
                 }
             }
         });
-
+        //Buttons for the Promote and Demote function
         promoteButton.addActionListener(e -> promoteUser());
         demoteButton.addActionListener(e -> demoteUser());
 
+        //Create panels for layout and add components to the JFrame
         JPanel topPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
         topPanel.add(Box.createHorizontalStrut(0));
         topPanel.add(viewOrderButton);
@@ -118,22 +124,46 @@ public class Manager extends JFrame {
 
         add(pagesPanel, BorderLayout.CENTER);
 
+        //Set the JFrame visible
         setVisible(true);
     }
 
+    //The action performed when the button "Profile Page" is clicked.
     private void showProfileDialog() {
-        // ... (unchanged)
+        // Create a dialog to display the profile information
+        JDialog profileDialog = new JDialog(this, "Profile Page", true);
+        profileDialog.setSize(400, 300);
+
+        // Add components to the profile dialog (labels, buttons)
+        JLabel nameLabel = new JLabel("Name: John Doe");  // Replace with actual user information
+        JLabel emailLabel = new JLabel("Email: john.doe@example.com");  // Replace with actual user information
+
+        JButton editButton = new JButton("Edit Profile");
+        editButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                // Open a new dialog for editing the profile 
+                showEditProfileDialog();
+            }
+        });
+
+        // Add components to the profile dialog's content pane
+        JPanel profilePanel = new JPanel(new GridLayout(10, 1));
+        profilePanel.add(nameLabel);
+        profilePanel.add(emailLabel);
+        profilePanel.add(editButton);
+
+        profileDialog.getContentPane().add(profilePanel);
+        profileDialog.setLocationRelativeTo(this);
+        profileDialog.setVisible(true);
     }
 
-    private void promoteUser() {
-        // Implement the logic to promote the user to staff.
-        // You can show a dialog, retrieve user information, and perform the necessary actions.
+    //Action performed to promote the user to staff
+    private void promoteUser() { 
+        //A list of already set users 
+        List<User> userList = getUserList(); 
 
-        // For illustration purposes, let's assume you have a list of users
-        // In a real application, you would retrieve user information from a database
-        List<User> userList = getUserList(); // You need to implement this method
-
-        // Show a dialog to select a user to promote
+        //dialog to select a user to promote
         String[] usernames = userList.stream().map(User::getUsername).toArray(String[]::new);
         String selectedUser = (String) JOptionPane.showInputDialog(
                 Manager.this,
@@ -162,13 +192,10 @@ public class Manager extends JFrame {
         }
     }
 
+    //Action performed to demote the user from staff
     private void demoteUser() {
-        // Implement the logic to demote the user from staff.
-        // You can show a dialog, retrieve user information, and perform the necessary actions.
-
-        // For illustration purposes, let's assume you have a list of users
-        // In a real application, you would retrieve user information from a database
-        List<User> userList = getUserList(); // You need to implement this method
+        //Getting the List of users
+        List<User> userList = getUserList(); 
 
         // Show a dialog to select a user to demote
         String[] usernames = userList.stream().map(User::getUsername).toArray(String[]::new);
@@ -189,10 +216,10 @@ public class Manager extends JFrame {
                     .orElse(null);
 
             if (userToDemote != null) {
-                // Update the user's role to "Regular" (or whatever the default role is)
-                userToDemote.setRole("Regular");
+                // Update the user's role to "Customer"
+                userToDemote.setRole("Customer");
 
-                JOptionPane.showMessageDialog(Manager.this, "User demoted: " + selectedUser);
+                JOptionPane.showMessageDialog(Manager.this, "User demoted to Customer: " + selectedUser);
             } else {
                 JOptionPane.showMessageDialog(Manager.this, "User not found: " + selectedUser);
             }
@@ -200,14 +227,94 @@ public class Manager extends JFrame {
     }
 
     private List<User> getUserList() {
-        // This method should be implemented to retrieve a list of users from a data source (e.g., a database)
-        // For simplicity, we'll create a sample list here
+        // This method should be implemented to retrieve a list of users from the data base 
         List<User> userList = new ArrayList<>();
-        userList.add(new User("user1", "Regular"));
-        userList.add(new User("user2", "Regular"));
-        userList.add(new User("user3", "Regular"));
+        userList.add(new User("user1", "Customer"));
+        userList.add(new User("user2", "Customer"));
+        userList.add(new User("user3", "Customer"));
         return userList;
     }
+
+    // Action performed when the "Edit Profile" button is clicked.    
+    private void showEditProfileDialog() {
+        // Create a modal dialog for editing the user profile.
+        JDialog editProfileDialog = new JDialog(this, "Edit Profile", true);
+        editProfileDialog.setSize(400, 300);
+        editProfileDialog.setLayout(new GridLayout(8, 2));
+
+        // Components for user input
+        JTextField firstNameField = new JTextField();
+        JTextField lastNameField = new JTextField();
+        JTextField emailField = new JTextField();
+        JTextField passwordField = new JPasswordField();
+        JTextField phoneField = new JTextField();
+        JTextField addressField = new JTextField();
+        JTextField bankDetailsField = new JTextField();
+        JButton saveButton = new JButton("Save");
+
+        // Retrieve current user information, replace with actual data retrieval logic
+        String currentFirstName = "FirstName";
+        String currentLastName = "LastName";
+        String currentEmail = "Email";
+        String currentPassword = "Password";
+        String currentPhone = "Phone";
+        String currentAddress = "Address";
+        String currentBankDetails = "BankDetails";
+
+        // Set default values to the input fields
+        firstNameField.setText(currentFirstName);
+        lastNameField.setText(currentLastName);
+        emailField.setText(currentEmail);
+        passwordField.setText(currentPassword);
+        phoneField.setText(currentPhone);
+        addressField.setText(currentAddress);
+        bankDetailsField.setText(currentBankDetails);
+
+        // Add components to the dialog
+        editProfileDialog.add(new JLabel("First Name:"));
+        editProfileDialog.add(firstNameField);
+        editProfileDialog.add(new JLabel("Last Name:"));
+        editProfileDialog.add(lastNameField);
+        editProfileDialog.add(new JLabel("Email:"));
+        editProfileDialog.add(emailField);
+        editProfileDialog.add(new JLabel("Password:"));
+        editProfileDialog.add(passwordField);
+        editProfileDialog.add(new JLabel("Phone:"));
+        editProfileDialog.add(phoneField);
+        editProfileDialog.add(new JLabel("Address:"));
+        editProfileDialog.add(addressField);
+        editProfileDialog.add(new JLabel("Bank Details:"));
+        editProfileDialog.add(bankDetailsField);
+        editProfileDialog.add(new JLabel()); // Empty label for spacing
+        editProfileDialog.add(saveButton);
+
+        // Add action listener to the save button
+        saveButton.addActionListener(e -> {
+            // Retrieve values from input fields
+            String newFirstName = firstNameField.getText();
+            String newLastName = lastNameField.getText();
+            String newEmail = emailField.getText();
+            String newPassword = passwordField.getText();
+            String newPhone = phoneField.getText();
+            String newAddress = addressField.getText();
+            String newBankDetails = bankDetailsField.getText();
+
+            // Update the user information ,replace with actual update logic
+            System.out.println("Updated First Name: " + newFirstName);
+            System.out.println("Updated Last Name: " + newLastName);
+            System.out.println("Updated Email: " + newEmail);
+            System.out.println("Updated Password: " + newPassword);
+            System.out.println("Updated Phone: " + newPhone);
+            System.out.println("Updated Address: " + newAddress);
+            System.out.println("Updated Bank Details: " + newBankDetails);
+
+            // Close the dialog
+            editProfileDialog.dispose();
+        });
+
+        // Set the dialog to be visible
+        editProfileDialog.setVisible(true);
+        }
 
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> new Manager());

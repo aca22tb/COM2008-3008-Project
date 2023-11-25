@@ -9,14 +9,18 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 public class Customer extends JFrame {
+    // Buttons and text field for various actions on the customer interface.
     private JButton orderButton, productButton, profileButton, searchButton, logoutButton;
     private JTextField searchField;
 
+    // Set frame properties
     public Customer() {
+        // Set frame properties
         setTitle("User Page");
         setSize(900, 500);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
 
+        // Initialize buttons, text field, and set their properties.
         orderButton = new JButton("Order Page");
         productButton = new JButton("Product Page");
         profileButton = new JButton("Profile Page");
@@ -25,15 +29,18 @@ public class Customer extends JFrame {
 
         searchField = new JTextField(20);
 
+        // Set preferred sizes for some buttons.
         orderButton.setPreferredSize(new Dimension(50, 40));
         productButton.setPreferredSize(new Dimension(150, 40));
 
+        // Attach action listeners to buttons for specific actions.
         orderButton.addActionListener(e -> JOptionPane.showMessageDialog(Customer.this, "Opening Order Page..."));
         productButton.addActionListener(e -> JOptionPane.showMessageDialog(Customer.this, "Opening Product Page..."));
 
         searchButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                // Prompt user for a search term and show a message.
                 String searchTerm = JOptionPane.showInputDialog(Customer.this, "Enter product name to search:");
                 JOptionPane.showMessageDialog(Customer.this, "Searching for: " + searchTerm);
             }
@@ -42,12 +49,14 @@ public class Customer extends JFrame {
         profileButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                // Show the user profile dialog.
                 showProfileDialog();}
         });
 
         logoutButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                // Prompt user for confirmation before logging out.
                 Object[] options = {"Yes", "No"};
                 int option = JOptionPane.showOptionDialog(
                         Customer.this,
@@ -60,6 +69,7 @@ public class Customer extends JFrame {
                         options[0]);
         
                 if (option == JOptionPane.YES_OPTION) {
+                    // Show a message, dispose of the current frame, and open the login frame.
                     JOptionPane.showMessageDialog(Customer.this, "Logging out...");
                     dispose();
                     new LoginFrame().setVisible(true);
@@ -67,6 +77,7 @@ public class Customer extends JFrame {
             }
         });
 
+        // Create panels for layout and add components to the JFrame.
         JPanel topPanel = new JPanel();
         topPanel.setLayout(new BoxLayout(topPanel, BoxLayout.X_AXIS));
         topPanel.add(Box.createHorizontalGlue()); 
@@ -99,15 +110,17 @@ public class Customer extends JFrame {
         
         add(pagesPanel, BorderLayout.CENTER);
 
+        // Make the JFrame visible.
         setVisible(true);
     }
 
+    // Action performed when the "Profile Page" button is clicked.
     private void showProfileDialog() {
         // Create a dialog to display the profile information
         JDialog profileDialog = new JDialog(this, "Profile Page", true);
         profileDialog.setSize(400, 300);
 
-        // Add components to the profile dialog
+        // Add components like labels and buttons to the profile dialog.
         JLabel nameLabel = new JLabel("Name: John Doe");  // Replace with actual user information
         JLabel emailLabel = new JLabel("Email: john.doe@example.com");  // Replace with actual user information
 
@@ -115,7 +128,7 @@ public class Customer extends JFrame {
         editButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                // Open a new dialog for editing the profile (you need to implement this)
+                // Open a new dialog for editing the profile
                 showEditProfileDialog();
             }
         });
@@ -131,8 +144,9 @@ public class Customer extends JFrame {
         profileDialog.setVisible(true);
     }
 
+    // Action performed when the "Edit Profile" button is clicked.
     private void showEditProfileDialog() {
-        // Create a modal dialog
+        // Create a modal dialog for editing the user profile.
         JDialog editProfileDialog = new JDialog(this, "Edit Profile", true);
         editProfileDialog.setSize(400, 300);
         editProfileDialog.setLayout(new GridLayout(8, 2)); // Adjust the layout based on your needs
@@ -147,7 +161,7 @@ public class Customer extends JFrame {
         JTextField bankDetailsField = new JTextField();
         JButton saveButton = new JButton("Save");
     
-        // Retrieve current user information (replace with actual data retrieval logic)
+        // Retrieve current user information, replace with actual data retrieval logic
         String currentFirstName = "CurrentFirstName";
         String currentLastName = "CurrentLastName";
         String currentEmail = "CurrentEmail";
@@ -194,8 +208,7 @@ public class Customer extends JFrame {
             String newAddress = addressField.getText();
             String newBankDetails = bankDetailsField.getText();
     
-            // Update the user information (replace with actual update logic)
-            // For simplicity, let's just print the updated information
+            // Update the user information, replace with actual update logic
             System.out.println("Updated First Name: " + newFirstName);
             System.out.println("Updated Last Name: " + newLastName);
             System.out.println("Updated Email: " + newEmail);
@@ -211,7 +224,6 @@ public class Customer extends JFrame {
         // Set the dialog to be visible
         editProfileDialog.setVisible(true);
         }
-    
 
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> new Customer());

@@ -69,8 +69,7 @@ public class Products {
         addRowToTable("Dapol", "LHT-626 Suburban B 4 Coach Set BR London #34 Lined Maroon", "M00318", 885.60);
         addRowToTable("Dapol", "LHT 633 No Division & Unnumbered GWR C & C Twin Cities", "M00729", 286.60);
         addRowToTable("Dapol", "2P-003-015 N Gauge B Set Coach Pack BR Crimson 66461 & 6464", "M00927", 37.80);
-        // Add more sample data...
-
+        
         // Make the frame visible
         frame.setVisible(true);
     }
@@ -91,7 +90,7 @@ public class Products {
         e.printStackTrace();
     }
 
-        String url = "jdbc:mysql://stusql.dcs.shef.ac.uk/DCS%20DB";
+        String url = "jdbc:mysql://stusql.dcs.shef.ac.uk/team056";
         String username = "team056";
         String password = "ohr4Kahbi";
 

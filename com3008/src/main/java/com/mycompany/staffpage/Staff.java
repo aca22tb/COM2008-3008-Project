@@ -9,13 +9,17 @@ import java.awt.event.ActionListener;
 
 public class Staff extends JFrame {
 
+    // Buttons for various actions
     private JButton createRecordButton, viewEditButton, profileButton, viewOrderButton, logoutButton;
 
+    // Set frame properties
     public Staff() {
+        // Set frame properties
         setTitle("Staff Page");
         setSize(900, 500);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
 
+        // Initialise buttons and set their actions
         createRecordButton = new JButton("Create product record");
         viewEditButton = new JButton("View and Edit product record");
         profileButton = new JButton("Profile Page");
@@ -25,29 +29,23 @@ public class Staff extends JFrame {
         createRecordButton.setPreferredSize(new Dimension(50, 40));
         viewEditButton.setPreferredSize(new Dimension(150, 40));
 
+        // Attach action listeners to buttons for specific actions.
         createRecordButton.addActionListener(e -> JOptionPane.showMessageDialog(Staff.this, "Creating Product Record..."));
         viewEditButton.addActionListener(e -> JOptionPane.showMessageDialog(Staff.this, "View/Edit Product Record..."));
         viewOrderButton.addActionListener(e -> JOptionPane.showMessageDialog(Staff.this, "Opening View Order..."));
 
-        /* 
-        viewOrderButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                String searchTerm = JOptionPane.showInputDialog(Staff.this, "Enter product name to search:");
-                JOptionPane.showMessageDialog(Staff.this, "Searching for: " + searchTerm);
-            }
-        });
-*/
-
         profileButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                showProfileDialog();}
+                // Show the user profile dialog.
+                showProfileDialog();
+            }
         });
-//check
+
         logoutButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                // Prompt user for confirmation before logging out.
                 Object[] options = {"Yes", "No"};
                 int option = JOptionPane.showOptionDialog(
                         Staff.this,
@@ -58,8 +56,9 @@ public class Staff extends JFrame {
                         null,
                         options,
                         options[0]);
-        
+
                 if (option == JOptionPane.YES_OPTION) {
+                    // Show a message, dispose of the current frame, and open the login frame.
                     JOptionPane.showMessageDialog(Staff.this, "Logging out...");
                     dispose();
                     new LoginFrame().setVisible(true);
@@ -67,6 +66,7 @@ public class Staff extends JFrame {
             }
         });
 
+        // Create panels for layout and add components to the JFrame.
         JPanel topPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
         topPanel.add(Box.createHorizontalStrut(0)); 
         topPanel.add(viewOrderButton);
@@ -94,15 +94,17 @@ public class Staff extends JFrame {
         
         add(pagesPanel, BorderLayout.CENTER);
 
+        // Make the JFrame visible.
         setVisible(true);
     }
 
+    // Action performed when the "Profile Page" button is clicked.
     private void showProfileDialog() {
         // Create a dialog to display the profile information
         JDialog profileDialog = new JDialog(this, "Profile Page", true);
         profileDialog.setSize(400, 300);
 
-        // Add components to the profile dialog
+        // Add components like labels and buttons to the profile dialog.
         JLabel nameLabel = new JLabel("Name: John Doe");  // Replace with actual user information
         JLabel emailLabel = new JLabel("Email: john.doe@example.com");  // Replace with actual user information
 
@@ -110,7 +112,7 @@ public class Staff extends JFrame {
         editButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                // Open a new dialog for editing the profile (you need to implement this)
+                // Open a new dialog for editing the profile
                 showEditProfileDialog();
             }
         });
@@ -126,11 +128,12 @@ public class Staff extends JFrame {
         profileDialog.setVisible(true);
     }
 
+    // Action performed when the "Edit Profile" button is clicked.
     private void showEditProfileDialog() {
-        // Create a modal dialog
+        // Create a modal dialog for editing the user profile.
         JDialog editProfileDialog = new JDialog(this, "Edit Profile", true);
         editProfileDialog.setSize(400, 300);
-        editProfileDialog.setLayout(new GridLayout(8, 2)); // Adjust the layout based on your needs
+        editProfileDialog.setLayout(new GridLayout(8, 2));
 
         // Components for user input
         JTextField firstNameField = new JTextField();
@@ -142,7 +145,7 @@ public class Staff extends JFrame {
         JTextField bankDetailsField = new JTextField();
         JButton saveButton = new JButton("Save");
 
-        // Retrieve current user information (replace with actual data retrieval logic)
+        // Retrieve current user information, replace with actual data retrieval logic
         String currentFirstName = "FirstName";
         String currentLastName = "LastName";
         String currentEmail = "Email";
@@ -189,8 +192,7 @@ public class Staff extends JFrame {
             String newAddress = addressField.getText();
             String newBankDetails = bankDetailsField.getText();
 
-            // Update the user information (replace with actual update logic)
-            // For simplicity, let's just print the updated information
+            // Update the user information, replace with actual update logic
             System.out.println("Updated First Name: " + newFirstName);
             System.out.println("Updated Last Name: " + newLastName);
             System.out.println("Updated Email: " + newEmail);
@@ -205,10 +207,10 @@ public class Staff extends JFrame {
 
         // Set the dialog to be visible
         editProfileDialog.setVisible(true);
-        }
+    }
 
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> new Staff());
     }
-    
+
 }
