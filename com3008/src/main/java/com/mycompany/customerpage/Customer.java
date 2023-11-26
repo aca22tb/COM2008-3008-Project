@@ -7,15 +7,17 @@ import com.mycompany.loginapp.LoginFrame;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import com.mycompany.productpage.*;
+import com.mycompany.orderpage.*;
 
 public class Customer extends JFrame {
     // Buttons and text field for various actions on the customer interface.
     private JButton orderButton, productButton, profileButton, searchButton, logoutButton;
     private JTextField searchField;
 
-    // Set frame properties
+    // Constructor for initializing the customer interface.
     public Customer() {
-        // Set frame properties
+        // Set the title, size, and default close operation for the JFrame.
         setTitle("User Page");
         setSize(900, 500);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
@@ -33,9 +35,17 @@ public class Customer extends JFrame {
         orderButton.setPreferredSize(new Dimension(50, 40));
         productButton.setPreferredSize(new Dimension(150, 40));
 
-        // Attach action listeners to buttons for specific actions.
-        orderButton.addActionListener(e -> JOptionPane.showMessageDialog(Customer.this, "Opening Order Page..."));
-        productButton.addActionListener(e -> JOptionPane.showMessageDialog(Customer.this, "Opening Product Page..."));
+        orderButton.addActionListener(e -> {
+            // Open the order page
+            new Order().setVisible(true);
+            dispose(); // Close the current customer page if needed
+        });
+
+        productButton.addActionListener(e -> {
+            // Open the product page
+            new Products().setVisible(true);
+            dispose(); // Close the current customer page if needed
+        });
 
         searchButton.addActionListener(new ActionListener() {
             @Override
@@ -120,7 +130,7 @@ public class Customer extends JFrame {
         JDialog profileDialog = new JDialog(this, "Profile Page", true);
         profileDialog.setSize(400, 300);
 
-        // Add components like labels and buttons to the profile dialog.
+        /// Add components like labels and buttons to the profile dialog.
         JLabel nameLabel = new JLabel("Name: John Doe");  // Replace with actual user information
         JLabel emailLabel = new JLabel("Email: john.doe@example.com");  // Replace with actual user information
 
@@ -208,7 +218,7 @@ public class Customer extends JFrame {
             String newAddress = addressField.getText();
             String newBankDetails = bankDetailsField.getText();
     
-            // Update the user information, replace with actual update logic
+            // Update the user information, replace with actual update logic)
             System.out.println("Updated First Name: " + newFirstName);
             System.out.println("Updated Last Name: " + newLastName);
             System.out.println("Updated Email: " + newEmail);
@@ -224,6 +234,7 @@ public class Customer extends JFrame {
         // Set the dialog to be visible
         editProfileDialog.setVisible(true);
         }
+    
 
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> new Customer());

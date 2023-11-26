@@ -15,7 +15,7 @@ public class Products {
 
     public Products() {
         // Set up the JFrame
-        JFrame frame = new JFrame("Product Table Example");
+        JFrame frame = new JFrame("Product Table");
         frame.setSize(1000, 400);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
@@ -109,12 +109,16 @@ public class Products {
             }   
         }
     } catch (SQLException e) {
+        // Handle SQLException
         System.err.println("SQLException: " + e.getMessage());
-        e.printStackTrace(); // 打印异常堆栈信息
-    }
+        e.printStackTrace(); // Print the exception stack trace
+    }    
 }
 
     public static void main(String[] args) {
         SwingUtilities.invokeLater(Products::new);
+    }
+
+    public void setVisible(boolean b) {
     }
 }
