@@ -1,7 +1,6 @@
 package com.mycompany.loginapp;
 
 import javax.swing.*;
-import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.sql.Connection;
@@ -10,9 +9,9 @@ import java.sql.SQLException;
 
 public class SignUpFrame extends JFrame {
 
-    private JLabel userIDLabel, passwordLabel, confirmPasswordLabel, emailLabel, firstNameLabel, lastNameLabel,
+    private JLabel passwordLabel, confirmPasswordLabel, emailLabel, firstNameLabel, lastNameLabel,
             phoneNumberLabel, addressLabel, staffKeyLabel, managerKeyLabel;
-    private JTextField userIDField, emailField, firstNameField, lastNameField, phoneNumberField, addressField,
+    private JTextField emailField, firstNameField, lastNameField, phoneNumberField, addressField,
             staffKeyField, managerKeyField;
     private JPasswordField passwordField, confirmPasswordField;
     private JButton signUpButton;

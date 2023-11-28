@@ -112,17 +112,6 @@ public class LoginFrame extends JFrame {
     Customer customerPage = new Customer(username, role);
     customerPage.setVisible(true);
     }
-    private void openStaffPage() {
-        Staff staffPage = new Staff();
-        staffPage.setVisible(true);
-        dispose();
-    }
-
-    private void openManagerPage() {
-        Manager managerPage = new Manager();
-        managerPage.setVisible(true);
-        dispose();
-    }
 
     private void signUpButtonActionPerformed(ActionEvent evt) {
         SignUpFrame signUpFrame = new SignUpFrame();

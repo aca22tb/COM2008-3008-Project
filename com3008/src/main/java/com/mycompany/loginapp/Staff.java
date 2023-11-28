@@ -1,10 +1,6 @@
 package com.mycompany.loginapp;
 
-
-
 import javax.swing.*;
-import com.mycompany.loginapp.LoginFrame;
-
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -46,7 +42,7 @@ public class Staff extends JFrame {
             public void actionPerformed(ActionEvent e) {
                 showProfileDialog();}
         });
-//check
+
         logoutButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -97,7 +93,6 @@ public class Staff extends JFrame {
         add(pagesPanel, BorderLayout.CENTER);
 
         setVisible(true);
-        
     }
 
     private void showProfileDialog() {
@@ -208,7 +203,7 @@ public class Staff extends JFrame {
 
         // Set the dialog to be visible
         editProfileDialog.setVisible(true);
-        }
+    }
 
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> new Staff());
