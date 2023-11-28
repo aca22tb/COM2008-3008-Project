@@ -1,7 +1,11 @@
-package com.mycompany.managerpage;
+/*
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
+ */
+package com.mycompany.loginapp;
 
 import javax.swing.*;
-import com.mycompany.loginapp.LoginFrame;
+// import com.mycompany.loginapp.LoginFrame;
 
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -117,6 +121,7 @@ public class Manager extends JFrame {
         pagesPanel.add(viewEditButton);
 
         add(pagesPanel, BorderLayout.CENTER);
+        
 
         setVisible(true);
     }

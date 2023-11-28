@@ -1,4 +1,4 @@
-package com.mycompany.productpage;
+package com.mycompany.loginapp;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
@@ -91,7 +91,7 @@ public class Products {
         e.printStackTrace();
     }
 
-        String url = "jdbc:mysql://stusql.dcs.shef.ac.uk/DCS%20DB";
+        String url = "jdbc:mysql://stusql.dcs.shef.ac.uk/team056";
         String username = "team056";
         String password = "ohr4Kahbi";
 
@@ -118,4 +118,7 @@ public class Products {
     public static void main(String[] args) {
         SwingUtilities.invokeLater(Products::new);
     }
-}
+
+    public void setVisible(boolean b) {
+    }
+} 

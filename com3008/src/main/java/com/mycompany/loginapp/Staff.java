@@ -1,7 +1,9 @@
-package com.mycompany.staffpage;
+package com.mycompany.loginapp;
+
+
 
 import javax.swing.*;
-import com.mycompany.loginapp.LoginFrame;
+//import com.mycompany.loginapp.LoginFrame;
 
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -95,6 +97,7 @@ public class Staff extends JFrame {
         add(pagesPanel, BorderLayout.CENTER);
 
         setVisible(true);
+        
     }
 
     private void showProfileDialog() {
