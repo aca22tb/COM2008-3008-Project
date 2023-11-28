@@ -14,11 +14,12 @@ public class DatabaseConnection {
         return DriverManager.getConnection(JDBC_URL, USERNAME, PASSWORD);
     }
     public static void testConnection() {
-        try (Connection connection = getConnection()) {
+        try {
+            Connection connection = getConnection();
             System.out.println("Connection successful!");
+            connection.close();
         } catch (SQLException e) {
-            // Log the exception or throw a custom exception
-            throw new RuntimeException("Failed to test the database connection.", e);
+            e.printStackTrace(System.err);
         }
     }
 }
