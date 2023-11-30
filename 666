@@ -1,141 +1,90 @@
 package com.mycompany.loginapp;
 
 import javax.swing.*;
-import javax.swing.table.DefaultTableModel;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
-public class Cart extends JFrame {
+public class Customer extends JFrame {
 
-    private DefaultTableModel model;
-    private JTable table;
-    private JButton deleteButton, confirmOrderButton;
+    private JComboBox<String> productComboBox;
+    private JTextField quantityField;
+    private JButton addToCartButton, viewCartButton;
     private Map<String, Integer> shoppingCart;
 
-    public Cart(Map<String, Integer> shoppingCart) {
-        setTitle("Shopping Cart");
-        setSize(800, 400);
+    public Customer() {
+        setTitle("Customer Page");
+        setSize(600, 200);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
 
-        this.shoppingCart = shoppingCart;
-
-        // 初始化表格模型
-        model = new DefaultTableModel();
-        model.addColumn("Product");
-        model.addColumn("Quantity");
-
-        // 初始化表格
-        table = new JTable(model);
-
-        // 创建滚动窗格
-        JScrollPane scrollPane = new JScrollPane(table);
-
-        // 初始化按钮
-        deleteButton = createStyledButton("Delete from Cart");
-        confirmOrderButton = createStyledButton("Confirm Order");
+        // 初始化组件
+        productComboBox = new JComboBox<>();
+        quantityField = new JTextField(10);
+        addToCartButton = new JButton("Add to Cart");
+        viewCartButton = new JButton("View Cart");
 
         // 添加按钮监听器
-        deleteButton.addActionListener(e -> deleteFromCart());
-        confirmOrderButton.addActionListener(e -> confirmOrder());
+        addToCartButton.addActionListener(e -> addToCart());
+        viewCartButton.addActionListener(e -> viewCart());
 
-        // 创建底部面板
-        JPanel bottomPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
-        bottomPanel.add(deleteButton);
-        bottomPanel.add(confirmOrderButton);
+        // 初始化购物车
+        shoppingCart = new HashMap<>();
 
-        // 设置布局
+        // 显示可用产品
+        displayAvailableProducts();
+
+        // 布局设置
+        JPanel panel = new JPanel(new FlowLayout());
+        panel.add(new JLabel("Product:"));
+        panel.add(productComboBox);
+        panel.add(new JLabel("Quantity:"));
+        panel.add(quantityField);
+        panel.add(addToCartButton);
+        panel.add(viewCartButton);
+
         setLayout(new BorderLayout());
-        add(scrollPane, BorderLayout.CENTER);
-        add(bottomPanel, BorderLayout.SOUTH);
-
-        // 显示购物车内容
-        displayShoppingCart();
+        add(panel, BorderLayout.CENTER);
 
         setVisible(true);
     }
 
-    // 创建样式化按钮
-    private JButton createStyledButton(String buttonText) {
-        JButton button = new JButton(buttonText);
-        button.setPreferredSize(new Dimension(150, 40));
-        button.setFont(new Font("Arial", Font.PLAIN, 16));
-        return button;
-    }
-
-    // 显示购物车内容
-    private void displayShoppingCart() {
-        for (Map.Entry<String, Integer> entry : shoppingCart.entrySet()) {
-            String product = entry.getKey();
-            int quantity = entry.getValue();
-            Object[] rowData = {product, quantity};
-            model.addRow(rowData);
+    // 显示可用产品
+    private void displayAvailableProducts() {
+        List<String> availableProducts = Product.getAvailableProducts();
+        for (String product : availableProducts) {
+            productComboBox.addItem(product);
         }
     }
 
-    // 从购物车中删除产品
-    private void deleteFromCart() {
-        int selectedRow = table.getSelectedRow();
+    // 将产品添加到购物车
+    private void addToCart() {
+        String product = (String) productComboBox.getSelectedItem();
+        int quantity = getQuantityFromField();
 
-        if (selectedRow != -1) {
-            // 获取选定行的产品信息
-            String product = (String) table.getValueAt(selectedRow, 0);
-
-            // 从购物车中移除该产品
-            shoppingCart.remove(product);
-
-            // 更新表格显示
-            model.removeRow(selectedRow);
+        if (quantity > 0) {
+            shoppingCart.put(product, quantity);
+            JOptionPane.showMessageDialog(this, "Product added to cart!");
         } else {
-            JOptionPane.showMessageDialog(this, "Please select a product from the cart.");
+            JOptionPane.showMessageDialog(this, "Invalid quantity. Please enter a valid quantity.");
         }
     }
 
-    // 确认订单
-    private void confirmOrder() {
-        int choice = JOptionPane.showConfirmDialog(this, "Are you sure you want to confirm this order?", "Confirm Order", JOptionPane.YES_NO_OPTION);
-        if (choice == JOptionPane.YES_OPTION) {
-            // TODO: Add code to prompt the user for bank details and confirm the order
-            showBankDetailsDialog();
-        }
+    // 查看购物车
+    private void viewCart() {
+        new Cart(shoppingCart);
     }
 
-    // 弹出对话框以输入银行信息
-    private void showBankDetailsDialog() {
-        JPanel panel = new JPanel(new GridLayout(6, 2));
-
-        JTextField cardHolderNameField = new JTextField();
-        JTextField cardNumberField = new JTextField();
-        JTextField cvvField = new JTextField();
-        JTextField expiryDateField = new JTextField();
-
-        panel.add(new JLabel("Cardholder Name:"));
-        panel.add(cardHolderNameField);
-        panel.add(new JLabel("Card Number:"));
-        panel.add(cardNumberField);
-        panel.add(new JLabel("CVV:"));
-        panel.add(cvvField);
-        panel.add(new JLabel("Expiry Date:"));
-        panel.add(expiryDateField);
-
-        int result = JOptionPane.showConfirmDialog(this, panel, "Enter Bank Details", JOptionPane.OK_CANCEL_OPTION);
-
-        if (result == JOptionPane.OK_OPTION) {
-            // TODO: Add code to process the bank details and complete the order
-            JOptionPane.showMessageDialog(this, "Order confirmed! Bank details:\n" +
-                    "Cardholder Name: " + cardHolderNameField.getText() + "\n" +
-                    "Card Number: " + cardNumberField.getText() + "\n" +
-                    "CVV: " + cvvField.getText() + "\n" +
-                    "Expiry Date: " + expiryDateField.getText());
+    // 从数量字段获取数量
+    private int getQuantityFromField() {
+        try {
+            return Integer.parseInt(quantityField.getText());
+        } catch (NumberFormatException e) {
+            return 0;
         }
     }
 
     public static void main(String[] args) {
-        // For testing purposes
-        SwingUtilities.invokeLater(() -> {
-            Map<String, Integer> testCart = Map.of("Product A", 2, "Product B", 1, "Product C", 3);
-            new Cart(testCart);
-        });
+        SwingUtilities.invokeLater(() -> new Customer());
     }
 }
