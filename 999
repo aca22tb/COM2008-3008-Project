@@ -1,3 +1,7 @@
+Exception in thread "main" java.lang.ExceptionInInitializerError
+Caused by: java.lang.RuntimeException: Uncompilable code - 找不到符号
+  符号:   类 Product
+  位置: 类 com.mycompany.loginapp.Customer
 package com.mycompany.loginapp;
 
 import javax.swing.*;
