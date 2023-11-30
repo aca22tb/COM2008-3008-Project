@@ -1,202 +1,192 @@
 package com.mycompany.loginapp;
 
 import javax.swing.*;
+import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.util.HashMap;
+import java.util.Map;
 
 public class Customer extends JFrame {
 
-    private JButton orderButton, productButton, profileButton, searchButton, logoutButton;
+    private JButton searchButton, viewCartButton, viewOrderHistoryButton, editProfileButton, logoutButton;
     private JTextField searchField;
-    private JButton goToStaffButton, goToManagerButton;
+    private DefaultTableModel model;
+    private JTable table;
+    private JButton addToCartButton;
+    private JComboBox<String> quantityComboBox;
+    private Map<String, String> typeCodeMapping;
+    private Map<String, Integer> shoppingCart = new HashMap<>();
 
-    public Customer(String username, String userRole) {
-        System.out.println("Username: " + username);
-        System.out.println("UserRole: " + userRole);
-        setTitle("User Page");
-        setSize(900, 500);
+    public Customer() {
+        setTitle("Customer Page");
+        setSize(1200, 500);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
 
-        orderButton = new JButton("Order Page");
-        productButton = new JButton("Product Page");
-        profileButton = new JButton("Profile Page");
-        searchButton = new JButton("Search");
-        logoutButton = new JButton("Log Out");
+        // 初始化按钮和文本框
+        searchButton = createStyledButton("Search Products");
+        viewCartButton = createStyledButton("View Cart");
+        viewOrderHistoryButton = createStyledButton("View Order History");
+        editProfileButton = createStyledButton("Edit Profile");
+        logoutButton = createStyledButton("Log Out");
 
         searchField = new JTextField(20);
 
-        // Always create these buttons
-        goToStaffButton = new JButton("Go to Staff Page");
-        goToManagerButton = new JButton("Go to Manager Page");
+        // 初始化购物车按钮和选择数量的组件
+        addToCartButton = createStyledButton("Add to Cart");
+        quantityComboBox = new JComboBox<>(new String[]{"1", "2", "3", "4", "5"});
 
-        orderButton.addActionListener(e -> {
-            new Order().setVisible(true);
-            dispose();
-        });
+        // 初始化产品类型和Code的映射
+        typeCodeMapping = new HashMap<>();
+        typeCodeMapping.put("track", "R");
+        typeCodeMapping.put("controller", "C");
+        typeCodeMapping.put("locomotive", "L");
+        typeCodeMapping.put("rolling stack", "S");
+        typeCodeMapping.put("train set", "M");
+        typeCodeMapping.put("train pack", "P");
 
-        productButton.addActionListener(e -> {
-            new Products().setVisible(true);
-            dispose();
-        });
-
-        searchButton.addActionListener(e -> {
-            String searchTerm = JOptionPane.showInputDialog(Customer.this, "Enter product name to search:");
-            JOptionPane.showMessageDialog(Customer.this, "Searching for: " + searchTerm);
-        });
-
-        profileButton.addActionListener(e -> showProfileDialog());
+        // 添加按钮监听器
+        searchButton.addActionListener(e -> showProductsByType());
+        viewCartButton.addActionListener(e -> showCart());
+        viewOrderHistoryButton.addActionListener(e -> showOrderHistory());
+        editProfileButton.addActionListener(e -> showEditProfileDialog());
         logoutButton.addActionListener(e -> showLogoutDialog());
-        goToStaffButton.addActionListener(e -> showKeyInputDialog("Enter Staff Key", "520", new Staff()));
-        goToManagerButton.addActionListener(e -> showKeyInputDialog("Enter Manager Key", "1314", new Manager()));
+        addToCartButton.addActionListener(e -> addToCart());
 
-        JPanel topPanel = new JPanel();
-        topPanel.setLayout(new BoxLayout(topPanel, BoxLayout.X_AXIS));
-        topPanel.add(Box.createHorizontalGlue());
-        topPanel.add(profileButton);
+        // 顶部面板
+        JPanel topPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+        topPanel.add(searchField);
+        topPanel.add(searchButton);
 
-        JPanel searchPanel = new JPanel();
-        searchPanel.add(searchField);
-        searchPanel.add(searchButton);
-        topPanel.add(searchPanel);
-        topPanel.add(Box.createHorizontalGlue());
+        // 创建表格和模型
+        model = new DefaultTableModel();
+        model.addColumn("Brand");
+        model.addColumn("Name");
+        model.addColumn("Code");
+        model.addColumn("Price");
 
-        JPanel bottomPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
-        bottomPanel.add(logoutButton);
-        bottomPanel.add(goToStaffButton);
-        bottomPanel.add(goToManagerButton);
+        table = new JTable(model);
 
+        // 创建滚动窗格
+        JScrollPane scrollPane = new JScrollPane(table);
+
+        // 创建右侧面板
+        JPanel rightPanel = new JPanel(new GridLayout(7, 1));
+        rightPanel.add(createLabelAndButtonPanel("To view your cart, click here:", viewCartButton));
+        rightPanel.add(createLabelAndButtonPanel("To view your order history, click here:", viewOrderHistoryButton));
+        rightPanel.add(createLabelAndButtonPanel("To edit your profile, click here:", editProfileButton));
+        rightPanel.add(createLabelAndButtonPanel("To log out, click here:", logoutButton));
+
+        // 布局设置
         setLayout(new BorderLayout());
         add(topPanel, BorderLayout.NORTH);
+        add(scrollPane, BorderLayout.CENTER);
+        add(rightPanel, BorderLayout.EAST);
+
+        // 底部添加购物车的组件
+        JPanel bottomPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+        bottomPanel.add(createLabelAndButtonPanel("Quantity:", quantityComboBox));
+        bottomPanel.add(addToCartButton);
         add(bottomPanel, BorderLayout.SOUTH);
-
-        JPanel pagesPanel = new JPanel(new GridLayout(12, 1));
-        JLabel orderLabel = new JLabel("To check your order, click here:");
-        orderLabel.setHorizontalAlignment(SwingConstants.CENTER);
-        pagesPanel.add(orderLabel);
-        pagesPanel.add(orderButton);
-        pagesPanel.add(Box.createVerticalStrut(10));
-
-        JLabel productLabel = new JLabel("Check out all of our products!!!");
-        productLabel.setHorizontalAlignment(SwingConstants.CENTER);
-        pagesPanel.add(productLabel);
-        pagesPanel.add(productButton);
-
-        add(pagesPanel, BorderLayout.CENTER);
 
         setVisible(true);
     }
 
-    private void showProfileDialog() {
-        // Create a dialog to display the profile information
-        JDialog profileDialog = new JDialog(this, "Profile Page", true);
-        profileDialog.setSize(400, 300);
+    // 创建带有标签和按钮的面板
+    private JPanel createLabelAndButtonPanel(String labelText, JComponent component) {
+        JLabel label = new JLabel(labelText);
+        label.setHorizontalAlignment(SwingConstants.CENTER);
 
-        // Add components to the profile dialog
-        JLabel nameLabel = new JLabel("Name: John Doe");  // Replace with actual user information
-        JLabel emailLabel = new JLabel("Email: john.doe@example.com");  // Replace with actual user information
+        JPanel panel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+        panel.add(label);
+        panel.add(component);
 
-        JButton editButton = new JButton("Edit Profile");
-        editButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                // Open a new dialog for editing the profile (you need to implement this)
-                showEditProfileDialog();
-            }
-        });
-
-        // Add components to the profile dialog's content pane
-        JPanel profilePanel = new JPanel(new GridLayout(10, 1));
-        profilePanel.add(nameLabel);
-        profilePanel.add(emailLabel);
-        profilePanel.add(editButton);
-
-        profileDialog.getContentPane().add(profilePanel);
-        profileDialog.setLocationRelativeTo(this);
-        profileDialog.setVisible(true);
+        return panel;
     }
 
-        private void showEditProfileDialog() {
-            // Create a modal dialog
-            JDialog editProfileDialog = new JDialog(this, "Edit Profile", true);
-            editProfileDialog.setSize(400, 300);
-            editProfileDialog.setLayout(new GridLayout(8, 2)); // Adjust the layout based on your needs
-    
-            // Components for user input
-            JTextField firstNameField = new JTextField();
-            JTextField lastNameField = new JTextField();
-            JTextField emailField = new JTextField();
-            JTextField passwordField = new JPasswordField();
-            JTextField phoneField = new JTextField();
-            JTextField addressField = new JTextField();
-            JTextField bankDetailsField = new JTextField();
-            JButton saveButton = new JButton("Save");
-    
-            // Retrieve current user information (replace with actual data retrieval logic)
-            String currentFirstName = "FirstName";
-            String currentLastName = "LastName";
-            String currentEmail = "Email";
-            String currentPassword = "Password";
-            String currentPhone = "Phone";
-            String currentAddress = "Address";
-            String currentBankDetails = "BankDetails";
-    
-            // Set default values to the input fields
-            firstNameField.setText(currentFirstName);
-            lastNameField.setText(currentLastName);
-            emailField.setText(currentEmail);
-            passwordField.setText(currentPassword);
-            phoneField.setText(currentPhone);
-            addressField.setText(currentAddress);
-            bankDetailsField.setText(currentBankDetails);
-    
-            // Add components to the dialog
-            editProfileDialog.add(new JLabel("First Name:"));
-            editProfileDialog.add(firstNameField);
-            editProfileDialog.add(new JLabel("Last Name:"));
-            editProfileDialog.add(lastNameField);
-            editProfileDialog.add(new JLabel("Email:"));
-            editProfileDialog.add(emailField);
-            editProfileDialog.add(new JLabel("Password:"));
-            editProfileDialog.add(passwordField);
-            editProfileDialog.add(new JLabel("Phone:"));
-            editProfileDialog.add(phoneField);
-            editProfileDialog.add(new JLabel("Address:"));
-            editProfileDialog.add(addressField);
-            editProfileDialog.add(new JLabel("Bank Details:"));
-            editProfileDialog.add(bankDetailsField);
-            editProfileDialog.add(new JLabel()); // Empty label for spacing
-            editProfileDialog.add(saveButton);
-    
-            // Add action listener to the save button
-            saveButton.addActionListener(e -> {
-                // Retrieve values from input fields
-                String newFirstName = firstNameField.getText();
-                String newLastName = lastNameField.getText();
-                String newEmail = emailField.getText();
-                String newPassword = passwordField.getText();
-                String newPhone = phoneField.getText();
-                String newAddress = addressField.getText();
-                String newBankDetails = bankDetailsField.getText();
-    
-                // Update the user information (replace with actual update logic)
-                // For simplicity, let's just print the updated information
-                System.out.println("Updated First Name: " + newFirstName);
-                System.out.println("Updated Last Name: " + newLastName);
-                System.out.println("Updated Email: " + newEmail);
-                System.out.println("Updated Password: " + newPassword);
-                System.out.println("Updated Phone: " + newPhone);
-                System.out.println("Updated Address: " + newAddress);
-                System.out.println("Updated Bank Details: " + newBankDetails);
-    
-                // Close the dialog
-                editProfileDialog.dispose();
-            });
-    
-            // Set the dialog to be visible
-            editProfileDialog.setVisible(true);
+    // 创建样式化按钮
+    private JButton createStyledButton(String buttonText) {
+        JButton button = new JButton(buttonText);
+        button.setPreferredSize(new Dimension(200, 40));
+        button.setFont(new Font("Arial", Font.PLAIN, 16));
+        return button;
+    }
+
+    private void showProductsByType() {
+        String productType = searchField.getText();
+
+        if (typeCodeMapping.containsKey(productType.toLowerCase())) {
+            String productCode = typeCodeMapping.get(productType.toLowerCase());
+            showProducts(productCode);
+        } else {
+            JOptionPane.showMessageDialog(this, "Invalid product type. Please enter a valid product type and try again.");
+        }
+    }
+
+    private void showProducts(String productType) {
+        // 查询数据库并将结果显示在表格中
+        model.setRowCount(0); // 清空表格
+
+        try {
+            Connection connection = DatabaseConnection.getConnection();
+            String query = "SELECT brand, name, code, price FROM products WHERE code LIKE ? AND LENGTH(code) = 6";
+
+            try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+                preparedStatement.setString(1, productType + "%");
+                ResultSet resultSet = preparedStatement.executeQuery();
+
+                while (resultSet.next()) {
+                    String brand = resultSet.getString("brand");
+                    String name = resultSet.getString("name");
+                    String code = resultSet.getString("code");
+                    double price = resultSet.getDouble("price");
+
+                    Object[] rowData = {brand, name, code, price};
+                    model.addRow(rowData);
+                }
             }
-    
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void addToCart() {
+        int selectedRow = table.getSelectedRow();
+
+        if (selectedRow != -1) {
+            String code = (String) table.getValueAt(selectedRow, 2);
+            int quantity = Integer.parseInt((String) quantityComboBox.getSelectedItem());
+
+            // 将产品代码和数量添加到购物车中
+            shoppingCart.put(code, quantity);
+
+            // 提示用户产品已添加到购物车
+            JOptionPane.showMessageDialog(this, "Product added to cart:\nCode: " + code + "\nQuantity: " + quantity);
+        } else {
+            JOptionPane.showMessageDialog(this, "Please select a product from the table.");
+        }
+    }
+
+    private void showCart() {
+        // 打开购物车界面，并传递购物车数据
+        Cart cartPage = new Cart(shoppingCart);
+        cartPage.setVisible(true);
+        dispose(); // 关闭当前界面
+    }
+
+    private void showOrderHistory() {
+        // TODO: Add code to show the user's order history
+        JOptionPane.showMessageDialog(this, "Viewing Order History...");
+    }
+
+    private void showEditProfileDialog() {
+        // TODO: Add code for showing the edit profile dialog
+        JOptionPane.showMessageDialog(this, "Showing Edit Profile Dialog...");
+    }
 
     private void showLogoutDialog() {
         int option = JOptionPane.showConfirmDialog(
@@ -213,25 +203,7 @@ public class Customer extends JFrame {
         }
     }
 
-    private void showKeyInputDialog(String prompt, String correctKey, JFrame destinationFrame) {
-        String input = JOptionPane.showInputDialog(this, prompt);
-        if (input != null) {  // Check if the user clicked OK and didn't cancel
-            if (input.equals(correctKey)) {
-                destinationFrame.setVisible(true);
-                dispose();
-            } else {
-                JOptionPane.showMessageDialog(this, "Incorrect Key");
-            }
-        } else {
-            JOptionPane.showMessageDialog(this, "Operation canceled. No key entered.");
-        }
-    }
-
     public static void main(String[] args) {
-        // For testing purposes
-        String username = "testuser"; // Replace this with the actual username
-        String userRole = "Staff"; // Replace this with the actual user role
-
-        SwingUtilities.invokeLater(() -> new Customer(username, userRole));
+        SwingUtilities.invokeLater(() -> new Customer());
     }
 }
