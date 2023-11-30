@@ -1,11 +1,8 @@
-Exception in thread "main" java.lang.ExceptionInInitializerError
-Caused by: java.lang.RuntimeException: Uncompilable code - 找不到符号
-  符号:   类 Product
-  位置: 类 com.mycompany.loginapp.Customer
 package com.mycompany.loginapp;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableColumn;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -22,9 +19,8 @@ public class Customer extends JFrame {
     private DefaultTableModel model;
     private JTable table;
     private JButton addToCartButton;
-    private JTextField quantityField; // 修改此行
+    private JComboBox<String> quantityComboBox;
     private Map<String, String> typeCodeMapping;
-    private Map<String, Product> productDetails; // 修改此行
     private Map<String, Integer> shoppingCart = new HashMap<>();
 
     public Customer() {
@@ -41,9 +37,9 @@ public class Customer extends JFrame {
 
         searchField = new JTextField(20);
 
-        // 初始化购物车按钮、文本框和选择数量的组件
+        // 初始化购物车按钮和选择数量的组件
         addToCartButton = createStyledButton("Add to Cart");
-        quantityField = new JTextField(5); // 修改此行
+        quantityComboBox = new JComboBox<>(new String[]{"1", "2", "3", "4", "5"});
 
         // 初始化产品类型和Code的映射
         typeCodeMapping = new HashMap<>();
@@ -53,9 +49,6 @@ public class Customer extends JFrame {
         typeCodeMapping.put("rolling stack", "S");
         typeCodeMapping.put("train set", "M");
         typeCodeMapping.put("train pack", "P");
-
-        // 产品详细信息映射
-        productDetails = new HashMap<>();
 
         // 添加按钮监听器
         searchButton.addActionListener(e -> showProductsByType());
@@ -97,12 +90,9 @@ public class Customer extends JFrame {
 
         // 底部添加购物车的组件
         JPanel bottomPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
-        bottomPanel.add(createLabelAndButtonPanel("Quantity:", quantityField));
+        bottomPanel.add(createLabelAndButtonPanel("Quantity:", quantityComboBox));
         bottomPanel.add(addToCartButton);
         add(bottomPanel, BorderLayout.SOUTH);
-
-        // 获取并显示所有产品的详细信息
-        fetchProductDetails();
 
         setVisible(true);
     }
@@ -125,29 +115,6 @@ public class Customer extends JFrame {
         button.setPreferredSize(new Dimension(200, 40));
         button.setFont(new Font("Arial", Font.PLAIN, 16));
         return button;
-    }
-
-    private void fetchProductDetails() {
-        try {
-            Connection connection = DatabaseConnection.getConnection();
-            String query = "SELECT brand, name, code, price FROM products";
-            try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
-                ResultSet resultSet = preparedStatement.executeQuery();
-
-                while (resultSet.next()) {
-                    String brand = resultSet.getString("brand");
-                    String name = resultSet.getString("name");
-                    String code = resultSet.getString("code");
-                    double price = resultSet.getDouble("price");
-
-                    // 将产品详细信息添加到映射中
-                    Product product = new Product(brand, name, code, price);
-                    productDetails.put(code, product);
-                }
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
     }
 
     private void showProductsByType() {
@@ -192,21 +159,19 @@ public class Customer extends JFrame {
         int selectedRow = table.getSelectedRow();
 
         if (selectedRow != -1) {
+            String brand = (String) table.getValueAt(selectedRow, 0);
+            String name = (String) table.getValueAt(selectedRow, 1);
             String code = (String) table.getValueAt(selectedRow, 2);
-            int quantity = Integer.parseInt(quantityField.getText());
+            double price = (double) table.getValueAt(selectedRow, 3);
+            int quantity = Integer.parseInt((String) quantityComboBox.getSelectedItem());
 
-            // 将产品代码和数量添加到购物车中
+            // 将产品信息和数量添加到购物车中
             shoppingCart.put(code, quantity);
 
             // 提示用户产品已添加到购物车
-            JOptionPane.showMessageDialog(this, "Product added to cart:\nCode: " + code + "\nQuantity: " + quantity);
-
-            // 将购物车中产品的详细信息添加到映射中
-            Product product = productDetails.get(code);
-            product.setQuantity(quantity);
-            product.setTotalPrice(quantity * product.getPrice());
-            shoppingCart.put(code, quantity);
-
+            JOptionPane.showMessageDialog(this, "Product added to cart:\nBrand: " + brand +
+                    "\nName: " + name + "\nCode: " + code + "\nQuantity: " + quantity +
+                    "\nPrice: " + price + "\nTotal Price: " + (price * quantity));
         } else {
             JOptionPane.showMessageDialog(this, "Please select a product from the table.");
         }
@@ -214,7 +179,7 @@ public class Customer extends JFrame {
 
     private void showCart() {
         // 打开购物车界面，并传递购物车数据
-        Cart cartPage = new Cart(shoppingCart, productDetails);
+        Cart cartPage = new Cart(shoppingCart);
         cartPage.setVisible(true);
         dispose(); // 关闭当前界面
     }
