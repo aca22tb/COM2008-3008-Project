@@ -1,7 +1,7 @@
 package com.mycompany.loginapp;
 
 import javax.swing.*;
-//import java.awt.*;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.sql.Connection;
@@ -11,118 +11,143 @@ import java.sql.SQLException;
 
 public class LoginFrame extends JFrame {
 
-    private JLabel jLabel1, jLabel2;
-    private JTextField jTextField1;
-    private JPasswordField jPasswordField1;
-    private JButton jButton1, jButton2;
+    private JLabel emailLabel, passwordLabel;
+    private JTextField emailField;
+    private JPasswordField passwordField;
+    private JButton loginButton, signUpButton;
 
     public LoginFrame() {
-        initComponents();
-    }
+        setTitle("Login");
+        setSize(400, 200);
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-    private void initComponents() {
-        jLabel1 = new JLabel("Email:");
-        jLabel2 = new JLabel("Password:");
+        emailLabel = new JLabel("Email:");
+        passwordLabel = new JLabel("Password:");
 
-        jTextField1 = new JTextField(20);
-        jPasswordField1 = new JPasswordField(20);
+        emailField = new JTextField(20);
+        passwordField = new JPasswordField(20);
 
-        jButton1 = new JButton("Login");
-        jButton1.addActionListener(new ActionListener() {
+        loginButton = new JButton("Login");
+        signUpButton = new JButton("Sign Up");
+
+        loginButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent evt) {
-                loginButtonActionPerformed(evt);
+                login();
             }
         });
 
-        jButton2 = new JButton("Sign Up");
-        jButton2.addActionListener(new ActionListener() {
+        signUpButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent evt) {
-                signUpButtonActionPerformed(evt);
+                openSignUpFrame();
             }
         });
 
         GroupLayout layout = new GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
-        layout.setHorizontalGroup(
-                layout.createParallelGroup(GroupLayout.Alignment.LEADING)
-                        .addGroup(layout.createSequentialGroup()
-                                .addContainerGap()
-                                .addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
-                                        .addComponent(jLabel1)
-                                        .addComponent(jLabel2))
-                                .addGap(18, 18, 18)
-                                .addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING, false)
-                                        .addComponent(jTextField1)
-                                        .addComponent(jPasswordField1, GroupLayout.DEFAULT_SIZE, 150, Short.MAX_VALUE))
-                                .addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                        .addGroup(GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                                .addContainerGap(150, Short.MAX_VALUE)
-                                .addComponent(jButton1)
-                                .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(jButton2)
-                                .addGap(134, 134, 134))
+        layout.setAutoCreateGaps(true);
+        layout.setAutoCreateContainerGaps(true);
+
+        layout.setHorizontalGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
+                .addGroup(layout.createSequentialGroup()
+                        .addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
+                                .addComponent(emailLabel)
+                                .addComponent(passwordLabel))
+                        .addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
+                                .addComponent(emailField)
+                                .addComponent(passwordField)))
+                .addGroup(layout.createSequentialGroup()
+                        .addComponent(loginButton)
+                        .addComponent(signUpButton))
         );
-        layout.setVerticalGroup(
-                layout.createParallelGroup(GroupLayout.Alignment.LEADING)
-                        .addGroup(layout.createSequentialGroup()
-                                .addGap(24, 24, 24)
-                                .addGroup(layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
-                                        .addComponent(jLabel1)
-                                        .addComponent(jTextField1, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
-                                .addGap(18, 18, 18)
-                                .addGroup(layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
-                                        .addComponent(jLabel2)
-                                        .addComponent(jPasswordField1, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
-                                .addGap(18, 18, 18)
-                                .addGroup(layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
-                                        .addComponent(jButton1)
-                                        .addComponent(jButton2))
-                                .addContainerGap(20, Short.MAX_VALUE))
+
+        layout.setVerticalGroup(layout.createSequentialGroup()
+                .addGroup(layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
+                        .addComponent(emailLabel)
+                        .addComponent(emailField))
+                .addGroup(layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
+                        .addComponent(passwordLabel)
+                        .addComponent(passwordField))
+                .addGroup(layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
+                        .addComponent(loginButton)
+                        .addComponent(signUpButton))
         );
 
         pack();
     }
 
-  private void loginButtonActionPerformed(ActionEvent evt) {
-    String username = jTextField1.getText();
-    String password = new String(jPasswordField1.getPassword());
+    private void login() {
+    String email = emailField.getText();
+    String password = new String(passwordField.getPassword());
 
     try {
         Connection connection = DatabaseConnection.getConnection();
         String query = "SELECT * FROM users WHERE email = ? AND password = ?";
         try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
-            preparedStatement.setString(1, username);
+            preparedStatement.setString(1, email);
             preparedStatement.setString(2, password);
+
             ResultSet resultSet = preparedStatement.executeQuery();
             if (resultSet.next()) {
                 String role = resultSet.getString("role");
-                openCustomerPage(username, role);  // 传递用户名和角色信息
-                dispose();
+                String staffKey = resultSet.getString("staffKey");
+
+                // 检查角色
+                if ("staff".equals(role)) {
+                    // 如果是 staff，检查 staff key 是否符合条件
+                    if (isValidStaffKey(staffKey)) {
+                        openRolePage(role);
+                    } else {
+                        JOptionPane.showMessageDialog(this, "Invalid staff key. Please try again.");
+                    }
+                } else {
+                    // 其他角色直接打开对应界面
+                    openRolePage(role);
+                }
             } else {
-                JOptionPane.showMessageDialog(this, "Login failed. Invalid username or password.");
+                JOptionPane.showMessageDialog(this, "Invalid email or password. Please try again.");
             }
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
     } catch (SQLException e) {
         e.printStackTrace();
     }
 }
 
+private boolean isValidStaffKey(String staffKey) {
+    // 在这里添加检查 staff key 是否有效的逻辑，例如和预设的值进行比较
+    // 如果 staff key 有效，返回 true；否则返回 false。
+    return "520".equals(staffKey);
+}
 
-    private void openCustomerPage(String username, String role) {
-    Customer customerPage = new Customer(username, role);
-    customerPage.setVisible(true);
+
+
+
+  private void openRolePage(String role) {
+    switch (role) {
+        case "customer":
+            new Customer();
+            break;
+        case "staff":
+            new Staff();
+            break;
+        case "manager":
+            new Manager();
+            break;
+        default:
+            JOptionPane.showMessageDialog(this, "Invalid user role.");
     }
+    dispose();
+}
 
-    private void signUpButtonActionPerformed(ActionEvent evt) {
-        SignUpFrame signUpFrame = new SignUpFrame();
-        signUpFrame.setVisible(true);
+
+
+
+    private void openSignUpFrame() {
+        new SignUpFrame().setVisible(true);
     }
 
     public static void main(String args[]) {
-        java.awt.EventQueue.invokeLater(new Runnable() {
-            public void run() {
-                new LoginFrame().setVisible(true);
-            }
-        });
+        java.awt.EventQueue.invokeLater(() -> new LoginFrame().setVisible(true));
     }
 }
