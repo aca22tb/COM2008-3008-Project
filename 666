@@ -1,3 +1,11 @@
+CREATE TABLE bank_details (
+    user_id INT PRIMARY KEY,
+    card_holder_name VARCHAR(255),
+    card_number VARCHAR(16),
+    cvv VARCHAR(3),
+    expiry_date VARCHAR(10)
+);
+
 package com.mycompany.loginapp;
 
 import javax.swing.*;
