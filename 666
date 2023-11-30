@@ -1,12 +1,20 @@
-CREATE TABLE bank_details (
-    user_id INT,
-    card_holder_name VARCHAR(255),
-    card_number VARCHAR(16),
-    cvv VARCHAR(3),
-    expiry_date VARCHAR(10),
-    PRIMARY KEY (user_id),
-    FOREIGN KEY (user_id) REFERENCES users(userID)
-);
+// BankDetails.java
+public class BankDetails {
+    private String cardHolderName;
+    private String cardNumber;
+    private String cvv;
+    private String expiryDate;
+
+    public BankDetails(String cardHolderName, String cardNumber, String cvv, String expiryDate) {
+        this.cardHolderName = cardHolderName;
+        this.cardNumber = cardNumber;
+        this.cvv = cvv;
+        this.expiryDate = expiryDate;
+    }
+
+    // 添加 getter 和 setter 方法
+    // ...
+}
 
 
 package com.mycompany.loginapp;
