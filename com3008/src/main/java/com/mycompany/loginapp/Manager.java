@@ -2,12 +2,12 @@ package com.mycompany.loginapp;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
 
 public class Manager extends JFrame {
 
-    private JButton promoteUserButton, dismissUserButton, viewOrdersButton, viewOrderHistoryButton, profileButton, logoutButton, goToCustomerPageButton;
+    private JButton promoteUserButton, demoteStaffButton, viewOrdersButton, viewOrderHistoryButton, profileButton, logoutButton, goToCustomerPageButton;
 
     public Manager() {
         setTitle("Manager Page");
@@ -16,7 +16,7 @@ public class Manager extends JFrame {
 
         // 初始化按钮
         promoteUserButton = createStyledButton("Promote User to Staff");
-        dismissUserButton = createStyledButton("Dismiss Staff");
+        demoteStaffButton = createStyledButton("Demote Staff");
         viewOrdersButton = createStyledButton("View Orders");
         viewOrderHistoryButton = createStyledButton("View Order History");
         profileButton = createStyledButton("Profile Page");
@@ -25,7 +25,7 @@ public class Manager extends JFrame {
 
         // 添加按钮监听器
         promoteUserButton.addActionListener(e -> promoteUserToStaff());
-        dismissUserButton.addActionListener(e -> dismissStaff());
+        demoteStaffButton.addActionListener(e -> demoteStaff());
         viewOrdersButton.addActionListener(e -> viewOrders());
         viewOrderHistoryButton.addActionListener(e -> viewOrderHistory());
         goToCustomerPageButton.addActionListener(e -> openCustomerPage());
@@ -42,15 +42,10 @@ public class Manager extends JFrame {
         JPanel bottomPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
         bottomPanel.add(logoutButton);
 
-        // 布局设置
-        setLayout(new BorderLayout());
-        add(topPanel, BorderLayout.NORTH);
-        add(bottomPanel, BorderLayout.SOUTH);
-
         // 中间面板
         JPanel pagesPanel = new JPanel(new GridLayout(6, 1));
         pagesPanel.add(createLabelAndButtonPanel("Promote a User to Staff", promoteUserButton));
-        pagesPanel.add(createLabelAndButtonPanel("Dismiss a Staff Member", dismissUserButton));
+        pagesPanel.add(createLabelAndButtonPanel("Demote a Staff Member", demoteStaffButton));
         pagesPanel.add(createLabelAndButtonPanel("View Current Orders", viewOrdersButton));
         pagesPanel.add(createLabelAndButtonPanel("View Order History", viewOrderHistoryButton));
         pagesPanel.add(createLabelAndButtonPanel("Go to Customer Page", goToCustomerPageButton));
@@ -86,12 +81,61 @@ public class Manager extends JFrame {
     }
 
     private void promoteUserToStaff() {
-        JOptionPane.showMessageDialog(this, "Promoting user to staff...");
+        String email = JOptionPane.showInputDialog(this, "Enter the email of the user to promote:");
+
+        if (email != null && !email.isEmpty()) {
+            // 查询用户并更新角色为 Staff
+            if (updateUserRole(email, "Staff", "520")) {
+                JOptionPane.showMessageDialog(this, "User promoted to staff successfully.");
+            } else {
+                JOptionPane.showMessageDialog(this, "User not found or could not be promoted.");
+            }
+        } else {
+            JOptionPane.showMessageDialog(this, "Invalid email. Please enter a valid email.");
+        }
     }
 
-    private void dismissStaff() {
-        JOptionPane.showMessageDialog(this, "Dismissing staff...");
+    private void demoteStaff() {
+        String email = JOptionPane.showInputDialog(this, "Enter the email of the staff member to demote:");
+
+        if (email != null && !email.isEmpty()) {
+            // 查询用户并更新角色为 customer
+            if (updateUserRole(email, "customer", null)) {
+                JOptionPane.showMessageDialog(this, "Staff member demoted successfully.");
+            } else {
+                JOptionPane.showMessageDialog(this, "Staff member not found or could not be demoted.");
+            }
+        } else {
+            JOptionPane.showMessageDialog(this, "Invalid email. Please enter a valid email.");
+        }
     }
+
+   private boolean updateUserRole(String email, String role, String staffKey) {
+    try {
+        Connection connection = DatabaseConnection.getConnection();
+        String query = "UPDATE users SET role = ?, staffKey = ? WHERE email = ?";
+
+        try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+            preparedStatement.setString(1, role);
+            preparedStatement.setString(2, staffKey);
+            preparedStatement.setString(3, email);
+
+            int rowsAffected = preparedStatement.executeUpdate();
+
+            if (rowsAffected > 0) {
+                System.out.println("User role and staffKey updated successfully.");
+            } else {
+                System.out.println("No rows affected. User not found or update failed.");
+            }
+
+            return rowsAffected > 0;
+        }
+    } catch (Exception e) {
+        e.printStackTrace();
+    }
+    return false;
+}
+
 
     private void viewOrders() {
         JOptionPane.showMessageDialog(this, "Viewing orders...");
