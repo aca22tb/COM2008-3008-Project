@@ -1,12 +1,16 @@
-package com.mycompany.loginapp;
+import java.util.Map;
 
 public class User {
     private String username;
     private String role;
+    private BankDetails bankDetails;
+    private Map<String, Order> orders; // 存储用户的订单
 
     public User(String username, String role) {
         this.username = username;
         this.role = role;
+        this.bankDetails = null;
+        this.orders = new HashMap<>();
     }
 
     public String getUsername() {
@@ -17,10 +21,33 @@ public class User {
         return role;
     }
 
-    public void setRole(String role) {
-        this.role = role;
+    public BankDetails getBankDetails() {
+        return bankDetails;
+    }
+
+    public void setBankDetails(BankDetails bankDetails) {
+        this.bankDetails = bankDetails;
+    }
+
+    public Map<String, Order> getOrders() {
+        return orders;
+    }
+
+    public void addOrder(String orderId, Order order) {
+        orders.put(orderId, order);
+    }
+
+    public Order getOrder(String orderId) {
+        return orders.get(orderId);
+    }
+
+    public void removeOrder(String orderId) {
+        orders.remove(orderId);
     }
 }
+
+
+
 package com.mycompany.loginapp;
 
 import javax.swing.*;
