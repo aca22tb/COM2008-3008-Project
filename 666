@@ -1,52 +1,25 @@
 package com.mycompany.loginapp;
 
-import java.util.ArrayList;
-import java.util.List;
+public class OrderLine {
+    private Product product;
+    private int quantity;
 
-public class Order {
-    private int orderID;
-    private User user;
-    private List<OrderLine> orderLines;
-    private boolean isFirstOrderConfirmed;
-    private BankDetails bankDetails;
-
-    public Order(int orderID, User user) {
-        this.orderID = orderID;
-        this.user = user;
-        this.orderLines = new ArrayList<>();
-        this.isFirstOrderConfirmed = false;
+    public OrderLine(Product product, int quantity) {
+        this.product = product;
+        this.quantity = quantity;
     }
 
-    public int getOrderID() {
-        return orderID;
+    public Product getProduct() {
+        return product;
     }
 
-    public User getUser() {
-        return user;
+    public int getQuantity() {
+        return quantity;
     }
 
-    public List<OrderLine> getOrderLines() {
-        return orderLines;
-    }
-
-    public boolean isFirstOrderConfirmed() {
-        return isFirstOrderConfirmed;
-    }
-
-    public void setFirstOrderConfirmed(boolean isFirstOrderConfirmed) {
-        this.isFirstOrderConfirmed = isFirstOrderConfirmed;
-    }
-
-    public BankDetails getBankDetails() {
-        return bankDetails;
-    }
-
-    public void setBankDetails(BankDetails bankDetails) {
-        this.bankDetails = bankDetails;
-    }
-
-    // Other methods for adding, updating, and deleting order lines
+    // Other methods if needed
 }
+
 
 
 
