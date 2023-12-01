@@ -1,6 +1,10 @@
-ALTER TABLE bank_details
-ADD COLUMN order_id INT,
-ADD FOREIGN KEY (order_id) REFERENCES orders(order_id);
+CREATE TABLE orders (
+    order_id INT PRIMARY KEY AUTO_INCREMENT,
+    user_email VARCHAR(255) NOT NULL,
+    order_date TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_email) REFERENCES users(email)
+);
+
 
 package com.mycompany.loginapp;
 
