@@ -152,9 +152,40 @@ public class Manager extends JFrame {
     }
 
     private void showProfileDialog() {
-        // TODO: Add code for showing the profile dialog
-        JOptionPane.showMessageDialog(this, "Showing Profile Dialog...");
+        // JOptionPane.showMessageDialog(this, "Showing Profile Dialog...");
+        JDialog profileDialog = new JDialog(this, "Profile Page", true);
+        profileDialog.setSize(450, 600);
+
+        // Mock user data (replace with actual data retrieval logic)
+        String name = "Manager";
+        String email = "manager email";
+
+        // Components for profile information
+        JLabel nameLabel = new JLabel("Name: " + name);
+        JLabel emailLabel = new JLabel("Email: " + email);
+        JButton editButton = new JButton("Edit Profile");
+
+        editButton.addActionListener(e -> showEditProfileDialog());
+
+        // Add components to the profile dialog's content pane
+        JPanel profilePanel = new JPanel(new GridLayout(10, 1));
+        profilePanel.add(nameLabel);
+        profilePanel.add(emailLabel);
+        profilePanel.add(editButton);
+
+        profileDialog.getContentPane().add(profilePanel);
+        profileDialog.setLocationRelativeTo(this);
+        profileDialog.setVisible(true);
     }
+
+    private void showEditProfileDialog() {
+        // Get the current manager's user ID (replace with actual logic)
+        int managerID = 1;
+
+        // Open the EditProfileFrame for the manager
+        new EditProfileFrame(managerID, "manager", this);
+    }
+    
 
     private void showLogoutDialog() {
         int option = JOptionPane.showConfirmDialog(

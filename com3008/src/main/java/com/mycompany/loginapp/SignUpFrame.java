@@ -182,7 +182,8 @@ public class SignUpFrame extends JFrame {
                 int rowsAffected = preparedStatement.executeUpdate();
                 if (rowsAffected > 0) {
                     JOptionPane.showMessageDialog(this, "Account created successfully!");
-                    this.dispose();
+                    dispose();
+                    new LoginFrame().setVisible(true);
                 } else {
                     JOptionPane.showMessageDialog(this, "Account creation failed.");
                 }

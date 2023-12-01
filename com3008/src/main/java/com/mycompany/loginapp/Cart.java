@@ -125,7 +125,6 @@ public class Cart extends JFrame {
     private void confirmOrder() {
         int choice = JOptionPane.showConfirmDialog(this, "Are you sure you want to confirm this order?", "Confirm Order", JOptionPane.YES_NO_OPTION);
         if (choice == JOptionPane.YES_OPTION) {
-            // TODO: Add code to prompt the user for bank details and complete the order
             showBankDetailsDialog();
         }
     }

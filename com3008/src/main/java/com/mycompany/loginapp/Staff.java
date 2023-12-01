@@ -130,6 +130,7 @@ public class Staff extends JFrame {
         editProfileDialog.setSize(400, 300);
         editProfileDialog.setLayout(new GridLayout(8, 2)); // Adjust the layout based on your needs
 
+
         // Components for user input
         JTextField firstNameField = new JTextField();
         JTextField lastNameField = new JTextField();

@@ -185,12 +185,10 @@ public class Customer extends JFrame {
     }
 
     private void showOrderHistory() {
-        // TODO: Add code to show the user's order history
         JOptionPane.showMessageDialog(this, "Viewing Order History...");
     }
 
     private void showEditProfileDialog() {
-        // TODO: Add code for showing the edit profile dialog
         JOptionPane.showMessageDialog(this, "Showing Edit Profile Dialog...");
     }
 
