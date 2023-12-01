@@ -152,6 +152,14 @@ public class Order extends JFrame implements ActionListener {
         JOptionPane.showMessageDialog(this, "Product not found");
     }
 
+    // 创建样式化按钮
+    // private JButton createStyledButton(String buttonText) {
+    //     JButton button = new JButton(buttonText);
+    //     button.setPreferredSize(new Dimension(200, 24));
+    //     button.setFont(new Font("Arial", Font.PLAIN, 12));
+    //     return button;
+    // }
+
     public static void main(String[] args) {
         new Order();
     }

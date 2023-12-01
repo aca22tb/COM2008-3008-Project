@@ -67,8 +67,8 @@ public class Cart extends JFrame {
     // 创建样式化按钮
     private JButton createStyledButton(String buttonText) {
         JButton button = new JButton(buttonText);
-        button.setPreferredSize(new Dimension(150, 40));
-        button.setFont(new Font("Arial", Font.PLAIN, 16));
+        button.setPreferredSize(new Dimension(150, 24));
+        button.setFont(new Font("Arial", Font.PLAIN, 12));
         return button;
     }
 
