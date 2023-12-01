@@ -5,6 +5,7 @@ import java.awt.*;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 
 public class EditProfileFrame extends JFrame {
 
@@ -118,14 +119,20 @@ public class EditProfileFrame extends JFrame {
                 preparedStatement.setString(4, livingAddress);
                 preparedStatement.setInt(5, userID);
 
-                preparedStatement.executeUpdate();
+                // preparedStatement.executeUpdate();
+                int rowsAffected = preparedStatement.executeUpdate();
+            if (rowsAffected > 0) {
+                System.out.println("Profile deatils saved to database. Rows affected: " + rowsAffected);
+            } else {
+                System.out.println("Failed to save Profile details to database. No rows affected.");
             }
-        } catch (Exception e) {
+            }
+        } catch (SQLException e) {
             e.printStackTrace();
         }
 
         // 提示用户信息已保存
-        JOptionPane.showMessageDialog(this, "Changes saved successfully!");
+        // JOptionPane.showMessageDialog(this, "Changes saved successfully!");
 
         // 关闭编辑个人资料界面
         parentFrame.dispose();
@@ -134,7 +141,7 @@ public class EditProfileFrame extends JFrame {
         // 这里您可以选择刷新用户信息，例如更新 Customer 界面上显示的用户信息
     }
 
-    public static void main(String[] args) {
-        SwingUtilities.invokeLater(() -> new EditProfileFrame(/* 在这里传入用户ID */));
-    }
+    // public static void main(String[] args) {
+    //     SwingUtilities.invokeLater(() -> new EditProfileFrame(/* 在这里传入用户ID */));
+    // }
 }
