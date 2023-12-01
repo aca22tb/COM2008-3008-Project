@@ -1,3 +1,4 @@
+Exception in thread "AWT-EventQueue-0" java.lang.RuntimeException: Uncompilable code - 非法的表达式开始
 package com.mycompany.loginapp;
 
 import javax.swing.*;
