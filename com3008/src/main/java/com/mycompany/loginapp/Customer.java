@@ -2,6 +2,7 @@ package com.mycompany.loginapp;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
+// import javax.swing.table.TableColumn;
 import java.awt.*;
 // import java.awt.event.ActionEvent;
 // import java.awt.event.ActionListener;
@@ -111,8 +112,8 @@ public class Customer extends JFrame {
     // 创建样式化按钮
     private JButton createStyledButton(String buttonText) {
         JButton button = new JButton(buttonText);
-        button.setPreferredSize(new Dimension(200, 40));
-        button.setFont(new Font("Arial", Font.PLAIN, 16));
+        button.setPreferredSize(new Dimension(200, 24));
+        button.setFont(new Font("Arial", Font.PLAIN, 12));
         return button;
     }
 
