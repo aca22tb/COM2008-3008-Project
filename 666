@@ -1,14 +1,8 @@
-Exception in thread "AWT-EventQueue-0" java.lang.RuntimeException: Uncompilable code - 无法将类 com.mycompany.loginapp.Cart中的构造器 Cart应用到给定类型;
-  需要: java.util.Map<java.lang.String,java.lang.Integer>,java.lang.String
-  找到:    java.util.Map<java.lang.String,java.lang.Integer>
-  原因: 实际参数列表和形式参数列表长度不同
 package com.mycompany.loginapp;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.util.Map;
 
 public class Cart extends JFrame {
@@ -17,15 +11,15 @@ public class Cart extends JFrame {
     private JTable table;
     private JButton deleteButton, confirmOrderButton;
     private Map<String, Integer> shoppingCart;
-    private String userRole; // Add user role information
+    private String userRole;
 
     public Cart(Map<String, Integer> shoppingCart, String userRole) {
+        this.shoppingCart = shoppingCart;
+        this.userRole = userRole;
+
         setTitle("Shopping Cart");
         setSize(800, 400);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
-
-        this.shoppingCart = shoppingCart;
-        this.userRole = userRole; // Set user role
 
         // 初始化表格模型
         model = new DefaultTableModel();
@@ -102,8 +96,23 @@ public class Cart extends JFrame {
     private void confirmOrder() {
         int choice = JOptionPane.showConfirmDialog(this, "Are you sure you want to confirm this order?", "Confirm Order", JOptionPane.YES_NO_OPTION);
         if (choice == JOptionPane.YES_OPTION) {
-            // 提示用户输入银行信息
-            showBankDetailsDialog();
+            // 根据用户角色执行不同的操作
+            switch (userRole) {
+                case "customer":
+                    // 客户提交订单，需要输入银行信息
+                    showBankDetailsDialog();
+                    break;
+                case "staff":
+                    // 员工确认订单，不需要输入银行信息
+                    // TODO: Add staff-specific order confirmation logic
+                    break;
+                case "manager":
+                    // 经理确认订单，不需要输入银行信息
+                    // TODO: Add manager-specific order confirmation logic
+                    break;
+                default:
+                    // 默认情况，不执行任何操作
+            }
         }
     }
 
@@ -128,62 +137,12 @@ public class Cart extends JFrame {
         int result = JOptionPane.showConfirmDialog(this, panel, "Enter Bank Details", JOptionPane.OK_CANCEL_OPTION);
 
         if (result == JOptionPane.OK_OPTION) {
-            // 获取用户输入的银行信息
-            String cardHolderName = cardHolderNameField.getText();
-            String cardNumber = cardNumberField.getText();
-            String cvv = cvvField.getText();
-            String expiryDate = expiryDateField.getText();
-
-            // 将银行信息存储到数据库
-            saveBankDetailsToDatabase(cardHolderName, cardNumber, cvv, expiryDate);
-        }
-    }
-
-    // 将银行信息存储到数据库
-    private void saveBankDetailsToDatabase(String cardHolderName, String cardNumber, String cvv, String expiryDate) {
-        // 数据库连接参数
-        try {
-            Class.forName("com.mysql.cj.jdbc.Driver");
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
-        }
-
-        String url = "jdbc:mysql://stusql.dcs.shef.ac.uk/team056";
-        String username = "team056";
-        String password = "ohr4Kahbi";
-
-        try (Connection connection = DriverManager.getConnection(url, username, password)) {
-            // 根据用户角色确定要插入的表
-            String tableName;
-            if ("customer".equals(userRole)) {
-                tableName = "customer_bank_details";
-            } else if ("staff".equals(userRole)) {
-                tableName = "staff_bank_details";
-            } else if ("manager".equals(userRole)) {
-                tableName = "manager_bank_details";
-            } else {
-                // 未知用户角色
-                throw new IllegalStateException("Unknown user role: " + userRole);
-            }
-
-            // 插入银行信息
-            String query = "INSERT INTO " + tableName + " (card_holder_name, card_number, cvv, expiry_date) VALUES (?, ?, ?, ?)";
-            try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
-                preparedStatement.setString(1, cardHolderName);
-                preparedStatement.setString(2, cardNumber);
-                preparedStatement.setString(3, cvv);
-                preparedStatement.setString(4, expiryDate);
-
-                int rowsAffected = preparedStatement.executeUpdate();
-                if (rowsAffected > 0) {
-                    JOptionPane.showMessageDialog(this, "Bank details saved successfully.");
-                } else {
-                    JOptionPane.showMessageDialog(this, "Failed to save bank details. No rows affected.");
-                }
-            }
-        } catch (SQLException e) {
-            System.err.println("SQLException: " + e.getMessage());
-            e.printStackTrace();
+            // TODO: Add code to process the bank details and complete the order
+            JOptionPane.showMessageDialog(this, "Order confirmed! Bank details:\n" +
+                    "Cardholder Name: " + cardHolderNameField.getText() + "\n" +
+                    "Card Number: " + cardNumberField.getText() + "\n" +
+                    "CVV: " + cvvField.getText() + "\n" +
+                    "Expiry Date: " + expiryDateField.getText());
         }
     }
 
