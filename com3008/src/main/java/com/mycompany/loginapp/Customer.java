@@ -193,7 +193,16 @@ public class Customer extends JFrame {
     }
 
     private void showOrderHistory() {
-        // TODO: Add code to show the user's order history
+        
+    JFrame orderHistoryFrame = new JFrame("Order History");
+    orderHistoryFrame.setSize(600, 400);
+    orderHistoryFrame.setLayout(new BorderLayout());
+    
+    // Add components to display order history...
+    // This is a placeholder for actual implementation
+
+    orderHistoryFrame.setVisible(true);
+    
         JOptionPane.showMessageDialog(this, "Viewing Order History...");
     }
 
