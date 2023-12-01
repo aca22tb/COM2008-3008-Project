@@ -1,7 +1,7 @@
 package com.mycompany.loginapp;
 
 import javax.swing.*;
-// import java.awt.*;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.sql.Connection;
@@ -95,13 +95,13 @@ public class LoginFrame extends JFrame {
                 if ("staff".equals(role)) {
                     // 如果是 staff，检查 staff key 是否符合条件
                     if (isValidStaffKey(staffKey)) {
-                        openRolePage(role);
+                        openRolePage(role, email);
                     } else {
                         JOptionPane.showMessageDialog(this, "Invalid staff key. Please try again.");
                     }
                 } else {
                     // 其他角色直接打开对应界面
-                    openRolePage(role);
+                    openRolePage(role, email);
                 }
             } else {
                 JOptionPane.showMessageDialog(this, "Invalid email or password. Please try again.");
@@ -114,6 +114,7 @@ public class LoginFrame extends JFrame {
     }
 }
 
+
 private boolean isValidStaffKey(String staffKey) {
     // 在这里添加检查 staff key 是否有效的逻辑，例如和预设的值进行比较
     // 如果 staff key 有效，返回 true；否则返回 false。
@@ -123,10 +124,10 @@ private boolean isValidStaffKey(String staffKey) {
 
 
 
-  private void openRolePage(String role) {
+  private void openRolePage(String role, String userEmail) {
     switch (role) {
         case "customer":
-            new Customer();
+            new Customer(userEmail);
             break;
         case "staff":
             new Staff();
@@ -139,6 +140,7 @@ private boolean isValidStaffKey(String staffKey) {
     }
     dispose();
 }
+
 
 
 
