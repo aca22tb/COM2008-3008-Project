@@ -1,3 +1,4 @@
+java.sql.SQLIntegrityConstraintViolationException: Duplicate entry '1' for key 'bank_details.PRIMARY'
 // 弹出对话框以输入银行信息
 private void showBankDetailsDialog() {
     JPanel panel = new JPanel(new GridLayout(6, 2));
