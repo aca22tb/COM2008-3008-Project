@@ -2,13 +2,14 @@ package com.mycompany.loginapp;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
-// import javax.swing.table.TableColumn;
+import javax.swing.table.TableColumn;
 import java.awt.*;
-// import java.awt.event.ActionEvent;
-// import java.awt.event.ActionListener;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -22,8 +23,11 @@ public class Customer extends JFrame {
     private JComboBox<String> quantityComboBox;
     private Map<String, String> typeCodeMapping;
     private Map<String, Integer> shoppingCart = new HashMap<>();
+    private String userEmail; // 新增用户邮箱字段
 
-    public Customer() {
+    public Customer(String userEmail) {
+        this.userEmail = userEmail; // 初始化用户邮箱
+
         setTitle("Customer Page");
         setSize(1200, 500);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
@@ -97,6 +101,10 @@ public class Customer extends JFrame {
         setVisible(true);
     }
 
+    Customer() {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
+
     // 创建带有标签和按钮的面板
     private JPanel createLabelAndButtonPanel(String labelText, JComponent component) {
         JLabel label = new JLabel(labelText);
@@ -112,8 +120,8 @@ public class Customer extends JFrame {
     // 创建样式化按钮
     private JButton createStyledButton(String buttonText) {
         JButton button = new JButton(buttonText);
-        button.setPreferredSize(new Dimension(200, 24));
-        button.setFont(new Font("Arial", Font.PLAIN, 12));
+        button.setPreferredSize(new Dimension(200, 40));
+        button.setFont(new Font("Arial", Font.PLAIN, 16));
         return button;
     }
 
@@ -185,12 +193,116 @@ public class Customer extends JFrame {
     }
 
     private void showOrderHistory() {
+        // TODO: Add code to show the user's order history
         JOptionPane.showMessageDialog(this, "Viewing Order History...");
     }
 
     private void showEditProfileDialog() {
-        JOptionPane.showMessageDialog(this, "Showing Edit Profile Dialog...");
+        // 查询数据库获取当前用户信息
+        User currentUser = getCurrentUserByEmail(userEmail); // 使用 userEmail 获取用户信息
+
+        if (currentUser != null) {
+            // 创建一个新的对话框用于编辑和保存用户信息
+            JDialog editProfileDialog = new JDialog(this, "Edit Profile", true);
+            editProfileDialog.setSize(400, 300);
+            editProfileDialog.setLayout(new BorderLayout());
+
+            // 创建表格用于显示和编辑用户信息
+            String[] columnNames = {"Attribute", "Value"};
+            String[][] data = {
+                    {"Email", currentUser.getEmail()},
+                    {"Password", currentUser.getPassword()},
+                    {"Phone Number", currentUser.getPhoneNumber()},
+                    {"Address", currentUser.getLivingAddress()}
+            };
+
+            JTable userProfileTable = new JTable(data, columnNames);
+            JScrollPane scrollPane = new JScrollPane(userProfileTable);
+
+            // 创建保存按钮
+            JButton saveButton = new JButton("Save");
+            saveButton.addActionListener(e -> saveUserProfile(userProfileTable, currentUser, editProfileDialog));
+
+            // 将组件添加到对话框中
+            editProfileDialog.add(scrollPane, BorderLayout.CENTER);
+            editProfileDialog.add(saveButton, BorderLayout.SOUTH);
+
+            // 显示对话框
+            editProfileDialog.setVisible(true);
+        } else {
+            // 处理用户为 null 的情况，可能是由于数据库查询失败或其他原因
+            JOptionPane.showMessageDialog(this, "Error: Unable to fetch user details. Please try again later.");
+        }
     }
+
+    private User getCurrentUserByEmail(String userEmail) {
+        try {
+            Connection connection = DatabaseConnection.getConnection();
+            String query = "SELECT * FROM users WHERE email = ?";
+            try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+                preparedStatement.setString(1, userEmail);
+               
+                 ResultSet resultSet = preparedStatement.executeQuery();
+
+
+                if (resultSet.next()) {
+                    String email = resultSet.getString("email");
+                    String password = resultSet.getString("password");
+                    String phoneNumber = resultSet.getString("phoneNumber");
+                    String livingAddress = resultSet.getString("livingAddress");
+
+                    return new User(email, password, phoneNumber, livingAddress);
+                    
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    private void saveUserProfile(JTable userProfileTable, User currentUser, JDialog editProfileDialog) {
+        // 获取用户编辑后的信息
+        String newEmail = (String) userProfileTable.getValueAt(0, 1);
+        String newPassword = (String) userProfileTable.getValueAt(1, 1);
+        String newPhoneNumber = (String) userProfileTable.getValueAt(2, 1);
+        String newAddress = (String) userProfileTable.getValueAt(3, 1);
+
+        // TODO: 更新数据库中当前用户的信息
+        updateCurrentUser(currentUser, newEmail, newPassword, newPhoneNumber, newAddress);
+
+        // 关闭编辑对话框
+        editProfileDialog.dispose();
+    }
+
+    private void updateCurrentUser(User currentUser, String newEmail, String newPassword,String newPhoneNumber, String newAddress) {
+    try {
+        Connection connection = DatabaseConnection.getConnection();
+        String query = "UPDATE users SET email = ?, password = ?, phoneNumber = ?, livingAddress = ? WHERE email = ?";
+        try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+            preparedStatement.setString(1, newEmail);
+            preparedStatement.setString(2, newPassword);
+            preparedStatement.setString(3, newPhoneNumber);
+            preparedStatement.setString(4, newAddress);
+            preparedStatement.setString(5, currentUser.getEmail());
+
+            System.out.println("Before update - User details: " + currentUser);
+System.out.println("Executing SQL query: " + preparedStatement.toString()); // 输出 SQL 语句
+            System.out.println("Parameters: " + newEmail + ", " + newPassword + ", " + newPhoneNumber + ", " + newAddress + ", " + currentUser.getEmail()); // 输出参数值
+
+            int rowsAffected = preparedStatement.executeUpdate();
+            if (rowsAffected > 0) {
+                JOptionPane.showMessageDialog(this, "User details updated successfully.");
+                System.out.println("User details updated in the database. Rows affected: " + rowsAffected);
+            } else {
+                System.out.println("Failed to update user details in the database. No rows affected.");
+            }
+        }
+    } catch (Exception e) {
+        e.printStackTrace();
+    }
+}
+
 
     private void showLogoutDialog() {
         int option = JOptionPane.showConfirmDialog(
@@ -208,6 +320,42 @@ public class Customer extends JFrame {
     }
 
     public static void main(String[] args) {
-        SwingUtilities.invokeLater(() -> new Customer());
+        SwingUtilities.invokeLater(() -> {
+            // 替换为实际的用户邮箱地址
+            String userEmail = "54321@qq.com";
+            new Customer(userEmail);
+        });
+
+    }
+
+
+
+
+// Additional method implementations will go here.
+// For example, getBankDetailsForUser and updateCurrentUser methods as outlined before.
+
+
+    // This method retrieves and displays the order history for the user
+    public void viewOrderHistory() {
+        String user_email = this.userEmail; // Assuming userEmail is an attribute of Customer class
+        try (Connection conn = DatabaseConnection.getConnection()) {
+            String sql = "SELECT * FROM order_history WHERE user_email = ? ORDER BY order_date DESC";
+            try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
+                pstmt.setString(1, user_email);
+                
+                ResultSet rs = pstmt.executeQuery();
+                while (rs.next()) {
+                    // Extract order details from the result set
+                    // Display them in the UI
+                    // This is just a placeholder, actual implementation will need to update the UI components
+                    System.out.println("Order ID: " + rs.getInt("order_id"));
+                    System.out.println("Product Code: " + rs.getString("product_code"));
+                    System.out.println("Quantity: " + rs.getInt("quantity"));
+                    System.out.println("Order Date: " + rs.getTimestamp("order_date"));
+                }
+            }
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+        }
     }
 }
