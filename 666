@@ -1,11 +1,21 @@
-ALTER TABLE bank_details ADD COLUMN user_role VARCHAR(255);
-private void saveBankDetailsToDatabase(String cardHolderName, String cardNumber, String cvv, String expiryDate, String userRole) {
-    // 获取当前登录用户的email
-    String userEmail = /* 获取当前登录用户的email */;
+CREATE TABLE bank_details (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    email VARCHAR(255) NOT NULL,
+    role VARCHAR(255) NOT NULL,
+    card_holder_name VARCHAR(255) NOT NULL,
+    card_number VARCHAR(255) NOT NULL,
+    cvv VARCHAR(255) NOT NULL,
+    expiry_date VARCHAR(255) NOT NULL
+);
 
-    // 保存银行信息到数据库，包括用户的email、角色和其他信息
+private void saveBankDetailsToDatabase(String cardHolderName, String cardNumber, String cvv, String expiryDate) {
+    // 获取当前登录用户的信息
+    String userEmail = emailField.getText(); // 这里假设你有一个用于存储用户 email 的字段
+    String userRole = /* 获取当前登录用户的 role，可能是从数据库中查询得到 */;
+
+    // 保存银行信息到数据库，包括用户的 email 和 role
     try (Connection connection = DatabaseConnection.getConnection()) {
-        String query = "INSERT INTO bank_details (email, role, card_holder_name, card_number, cvv, expiry_date, user_role) VALUES (?, ?, ?, ?, ?, ?, ?)";
+        String query = "INSERT INTO bank_details (email, role, card_holder_name, card_number, cvv, expiry_date) VALUES (?, ?, ?, ?, ?, ?)";
         try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
             preparedStatement.setString(1, userEmail);
             preparedStatement.setString(2, userRole);
@@ -13,8 +23,6 @@ private void saveBankDetailsToDatabase(String cardHolderName, String cardNumber,
             preparedStatement.setString(4, cardNumber);
             preparedStatement.setString(5, cvv);
             preparedStatement.setString(6, expiryDate);
-            preparedStatement.setString(7, userRole); // 将用户的角色添加到 user_role 列
-
             int rowsAffected = preparedStatement.executeUpdate();
 
             if (rowsAffected > 0) {
