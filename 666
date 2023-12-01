@@ -1,3 +1,7 @@
+Exception in thread "AWT-EventQueue-0" java.lang.RuntimeException: Uncompilable code - 无法将类 com.mycompany.loginapp.Cart中的构造器 Cart应用到给定类型;
+  需要: java.util.Map<java.lang.String,java.lang.Integer>,java.lang.String
+  找到:    java.util.Map<java.lang.String,java.lang.Integer>
+  原因: 实际参数列表和形式参数列表长度不同
 package com.mycompany.loginapp;
 
 import javax.swing.*;
