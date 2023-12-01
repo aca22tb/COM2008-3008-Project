@@ -9,7 +9,7 @@ import java.awt.event.ActionListener;
 
 public class Manager extends JFrame {
 
-    private JButton promoteUserButton, demoteStaffButton, viewOrdersButton, viewOrderHistoryButton, profileButton, logoutButton, goToCustomerPageButton;
+    private JButton promoteUserButton, demoteStaffButton, viewOrdersButton, viewOrderHistoryButton, profileButton, logoutButton, goToCustomerPageButton, goToStaffPageButton;
 
     public Manager() {
         setTitle("Manager Page");
@@ -24,6 +24,7 @@ public class Manager extends JFrame {
         profileButton = createStyledButton("Profile Page");
         logoutButton = createStyledButton("Log Out");
         goToCustomerPageButton = createStyledButton("Customer Page");
+        goToStaffPageButton = createStyledButton("Staff Page");
 
         // 添加按钮监听器
         promoteUserButton.addActionListener(e -> promoteUserToStaff());
@@ -31,6 +32,7 @@ public class Manager extends JFrame {
         viewOrdersButton.addActionListener(e -> viewOrders());
         viewOrderHistoryButton.addActionListener(e -> viewOrderHistory());
         goToCustomerPageButton.addActionListener(e -> openCustomerPage());
+        goToStaffPageButton.addActionListener( e-> openStaffPage());
         profileButton.addActionListener(e -> showProfileDialog());
         logoutButton.addActionListener(e -> showLogoutDialog());
 
@@ -45,6 +47,7 @@ public class Manager extends JFrame {
         topPanel.add(viewOrdersButton);
         topPanel.add(profileButton);
         topPanel.add(goToCustomerPageButton);
+        topPanel.add(goToStaffPageButton);
 
         // 底部面板
         JPanel bottomPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
@@ -58,6 +61,7 @@ public class Manager extends JFrame {
         pagesPanel.add(createLabelAndButtonPanel("View Order History", viewOrderHistoryButton));
         pagesPanel.add(createLabelAndButtonPanel("Customer Page", goToCustomerPageButton));
         pagesPanel.add(createLabelAndButtonPanel("Profile Page", profileButton));
+        pagesPanel.add(createLabelAndButtonPanel("Staff Page", goToStaffPageButton));
 
         // 布局设置
         setLayout(new BorderLayout());
@@ -160,6 +164,11 @@ public class Manager extends JFrame {
         dispose();
     }
 
+    private void openStaffPage(){
+        Staff staffPage = new Staff();
+        staffPage.setVisible(true);
+        dispose();
+    }
 
     private void showProfileDialog() {
         // JOptionPane.showMessageDialog(this, "Showing Profile Dialog...");

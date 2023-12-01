@@ -7,7 +7,7 @@ import java.awt.event.ActionListener;
 
 public class Staff extends JFrame {
 
-    private JButton createRecordButton, viewEditButton, profileButton, viewOrderButton, logoutButton;
+    private JButton createRecordButton, viewEditButton, profileButton, viewOrderButton, logoutButton, goToCustomerPageButton;
 
     public Staff() {
         setTitle("Staff Page");
@@ -19,6 +19,7 @@ public class Staff extends JFrame {
         profileButton = new JButton("Profile Page");
         viewOrderButton = new JButton("View orders");
         logoutButton = new JButton("Log Out");
+        goToCustomerPageButton = createStyledButton("Customer Page");
 
         createRecordButton.setPreferredSize(new Dimension(50, 40));
         viewEditButton.setPreferredSize(new Dimension(150, 40));
@@ -26,6 +27,7 @@ public class Staff extends JFrame {
         createRecordButton.addActionListener(e -> JOptionPane.showMessageDialog(Staff.this, "Creating Product Record..."));
         viewEditButton.addActionListener(e -> JOptionPane.showMessageDialog(Staff.this, "View/Edit Product Record..."));
         viewOrderButton.addActionListener(e -> JOptionPane.showMessageDialog(Staff.this, "Opening View Order..."));
+        goToCustomerPageButton.addActionListener(e -> openCustomerPage());
 
         /* 
         viewOrderButton.addActionListener(new ActionListener() {
@@ -69,6 +71,7 @@ public class Staff extends JFrame {
         topPanel.add(Box.createHorizontalStrut(0)); 
         topPanel.add(viewOrderButton);
         topPanel.add(profileButton);
+        topPanel.add(goToCustomerPageButton);
 
         
         JPanel bottomPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
@@ -89,6 +92,8 @@ public class Staff extends JFrame {
         productLabel.setHorizontalAlignment(SwingConstants.CENTER);
         pagesPanel.add(productLabel);
         pagesPanel.add(viewEditButton);
+        pagesPanel.add(createLabelAndButtonPanel("Customer Page", goToCustomerPageButton));
+
         
         add(pagesPanel, BorderLayout.CENTER);
 
@@ -204,7 +209,31 @@ public class Staff extends JFrame {
 
         // Set the dialog to be visible
         editProfileDialog.setVisible(true);
+
+        
     }
+
+    private JButton createStyledButton(String buttonText) {
+        JButton button = new JButton(buttonText);
+        button.setPreferredSize(new Dimension(200, 24));
+        button.setFont(new Font("Arial", Font.PLAIN, 12));
+        return button;
+    }
+    private JPanel createLabelAndButtonPanel(String labelText, JButton button) {
+        JLabel label = new JLabel(labelText);
+        label.setHorizontalAlignment(SwingConstants.CENTER);
+
+        JPanel panel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+        panel.add(label);
+        panel.add(button);
+
+        return panel;
+    }
+    private void openCustomerPage() {
+            Customer customerPage = new Customer();
+            customerPage.setVisible(true);
+            dispose();
+        }
 
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> new Staff());
