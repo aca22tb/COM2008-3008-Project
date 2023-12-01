@@ -15,6 +15,7 @@ public class EditProfileFrame extends JFrame {
         setTitle("Edit Profile");
         setSize(400, 300);
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+        
 
         // 获取用户信息
         String[] userInfo = getUserInfo(userID);

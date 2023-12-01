@@ -11,7 +11,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.HashMap;
 import java.util.Map;
-
+///testing for jeannie
 public class Customer extends JFrame {
 
     private JButton searchButton, viewCartButton, viewOrderHistoryButton, editProfileButton, logoutButton;
