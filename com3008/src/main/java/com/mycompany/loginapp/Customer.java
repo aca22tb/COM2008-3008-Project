@@ -2,10 +2,9 @@ package com.mycompany.loginapp;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
-import javax.swing.table.TableColumn;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+// import java.awt.event.ActionEvent;
+// import java.awt.event.ActionListener;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -139,7 +138,6 @@ public class Customer extends JFrame {
             try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
                 preparedStatement.setString(1, productType + "%");
                 ResultSet resultSet = preparedStatement.executeQuery();
-
                 while (resultSet.next()) {
                     String brand = resultSet.getString("brand");
                     String name = resultSet.getString("name");
@@ -159,19 +157,14 @@ public class Customer extends JFrame {
         int selectedRow = table.getSelectedRow();
 
         if (selectedRow != -1) {
-            String brand = (String) table.getValueAt(selectedRow, 0);
-            String name = (String) table.getValueAt(selectedRow, 1);
             String code = (String) table.getValueAt(selectedRow, 2);
-            double price = (double) table.getValueAt(selectedRow, 3);
             int quantity = Integer.parseInt((String) quantityComboBox.getSelectedItem());
 
-            // 将产品信息和数量添加到购物车中
+            // 将产品代码和数量添加到购物车中
             shoppingCart.put(code, quantity);
 
             // 提示用户产品已添加到购物车
-            JOptionPane.showMessageDialog(this, "Product added to cart:\nBrand: " + brand +
-                    "\nName: " + name + "\nCode: " + code + "\nQuantity: " + quantity +
-                    "\nPrice: " + price + "\nTotal Price: " + (price * quantity));
+            JOptionPane.showMessageDialog(this, "Product added to cart:\nCode: " + code + "\nQuantity: " + quantity);
         } else {
             JOptionPane.showMessageDialog(this, "Please select a product from the table.");
         }
