@@ -15,6 +15,7 @@ public class Cart extends JFrame {
     private JTable table;
     private JButton deleteButton, confirmOrderButton, returnButton;
     private Map<String, Integer> shoppingCart;
+    private int orderCount = 0; // 新增一个订单计数器
 
     public Cart(Map<String, Integer> shoppingCart) {
         setTitle("Shopping Cart");
@@ -125,85 +126,157 @@ public class Cart extends JFrame {
     private void confirmOrder() {
         int choice = JOptionPane.showConfirmDialog(this, "Are you sure you want to confirm this order?", "Confirm Order", JOptionPane.YES_NO_OPTION);
         if (choice == JOptionPane.YES_OPTION) {
-            showBankDetailsDialog();
+            if (orderCount == 0) {
+                // 第一个订单，显示银行信息对话框
+                showBankDetailsDialog();
+                orderCount++;
+            } else {
+                // 第二个订单，直接完成订单
+                completeOrder();
+            }
         }
     }
 
-    // 弹出对话框以输入银行信息
-    // 弹出对话框以输入银行信息
-private void showBankDetailsDialog() {
-    JPanel panel = new JPanel(new GridLayout(6, 2));
+    // 将确认订单的逻辑提取为一个方法
+   // ... （之前的代码保持不变）
 
-    JTextField cardHolderNameField = new JTextField();
-    JTextField cardNumberField = new JTextField();
-    JTextField cvvField = new JTextField();
-    JTextField expiryDateField = new JTextField();
-
-    panel.add(new JLabel("Cardholder Name:"));
-    panel.add(cardHolderNameField);
-    panel.add(new JLabel("Card Number:"));
-    panel.add(cardNumberField);
-    panel.add(new JLabel("CVV:"));
-    panel.add(cvvField);
-    panel.add(new JLabel("Expiry Date:"));
-    panel.add(expiryDateField);
-
-    int result = JOptionPane.showConfirmDialog(this, panel, "Enter Bank Details", JOptionPane.OK_CANCEL_OPTION);
-
-    if (result == JOptionPane.OK_OPTION) {
-        // 获取用户输入的银行信息
-        String cardHolderName = cardHolderNameField.getText();
-        String cardNumber = cardNumberField.getText();
-        String cvv = cvvField.getText();
-        String expiryDate = expiryDateField.getText();
-
-        // 保存银行信息到数据库
-        saveBankDetailsToDatabase(cardHolderName, cardNumber, cvv, expiryDate);
-
-        // 显示订单确认信息
-        JOptionPane.showMessageDialog(this, "Order confirmed! Bank details:\n" +
-                "Cardholder Name: " + cardHolderName + "\n" +
-                "Card Number: " + cardNumber + "\n" +
-                "CVV: " + cvv + "\n" +
-                "Expiry Date: " + expiryDate);
-    }
-}
-
-// 保存银行信息到数据库
-private void saveBankDetailsToDatabase(String cardHolderName, String cardNumber, String cvv, String expiryDate) {
+// 新增方法，保存购物信息到数据库
+private void saveOrderToDatabase(String userEmail, Map<String, Integer> shoppingCart) {
     try {
         Connection connection = DatabaseConnection.getConnection();
-        String query = "INSERT INTO bank_details (user_id, card_holder_name, card_number, cvv, expiry_date) VALUES (?, ?, ?, ?, ?)";
-        try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
-            // 这里假设 user_id 是对应用户的唯一标识，你可能需要根据实际情况修改
-            // 例如，可以在用户登录时从数据库中获取 user_id，并将其存储在 Cart 类中
-            int userId = 1; // 假设用户的 user_id 是 1，你需要根据实际情况修改
+        String insertOrderQuery = "INSERT INTO orders (user_email, product_code, quantity, order_status) VALUES (?, ?, ?, ?)";
+        String updateStockQuery = "UPDATE products SET stock = stock - ? WHERE code = ?";
 
-            preparedStatement.setInt(1, userId);
-            preparedStatement.setString(2, cardHolderName);
-            preparedStatement.setString(3, cardNumber);
-            preparedStatement.setString(4, cvv);
-            preparedStatement.setString(5, expiryDate);
+        try (PreparedStatement insertOrderStatement = connection.prepareStatement(insertOrderQuery);
+             PreparedStatement updateStockStatement = connection.prepareStatement(updateStockQuery)) {
 
-            int rowsAffected = preparedStatement.executeUpdate();
-            if (rowsAffected > 0) {
-                System.out.println("Bank details saved to database. Rows affected: " + rowsAffected);
-            } else {
-                System.out.println("Failed to save bank details to database. No rows affected.");
+            // 开始事务
+            connection.setAutoCommit(false);
+
+            for (Map.Entry<String, Integer> entry : shoppingCart.entrySet()) {
+                String productCode = entry.getKey();
+                int quantity = entry.getValue();
+
+                // 插入订单
+                insertOrderStatement.setString(1, userEmail);
+                insertOrderStatement.setString(2, productCode);
+                insertOrderStatement.setInt(3, quantity);
+                insertOrderStatement.setString(4, "Pending"); // 订单状态可以根据实际情况设定
+                insertOrderStatement.executeUpdate();
+
+                // 更新库存
+                updateStockStatement.setInt(1, quantity);
+                updateStockStatement.setString(2, productCode);
+                updateStockStatement.executeUpdate();
             }
+
+            // 提交事务
+            connection.commit();
+        } catch (SQLException e) {
+            // 回滚事务
+            connection.rollback();
+            e.printStackTrace();
+        } finally {
+            // 恢复自动提交
+            connection.setAutoCommit(true);
         }
     } catch (SQLException e) {
         e.printStackTrace();
     }
 }
 
+// 将确认订单的逻辑修改为调用新的保存订单方法
+private void completeOrder() {
+    // 保存购物信息到数据库
+    saveOrderToDatabase(userEmail, shoppingCart);
+
+    // 清空购物车和表格
+    shoppingCart.clear();
+    model.setRowCount(0);
+
+    JOptionPane.showMessageDialog(this, "Order confirmed!");
+
+    // 在此处调用 showOrderHistory 方法显示购买历史记录
+    showOrderHistory();
+}
+
+// ... （之后的代码保持不变）
+
+
+    // 弹出对话框以输入银行信息
+    private void showBankDetailsDialog() {
+        JPanel panel = new JPanel(new GridLayout(6, 2));
+
+        JTextField cardHolderNameField = new JTextField();
+        JTextField cardNumberField = new JTextField();
+        JTextField cvvField = new JTextField();
+        JTextField expiryDateField = new JTextField();
+
+        panel.add(new JLabel("Cardholder Name:"));
+        panel.add(cardHolderNameField);
+        panel.add(new JLabel("Card Number:"));
+        panel.add(cardNumberField);
+        panel.add(new JLabel("CVV:"));
+        panel.add(cvvField);
+        panel.add(new JLabel("Expiry Date:"));
+        panel.add(expiryDateField);
+
+        int result = JOptionPane.showConfirmDialog(this, panel, "Enter Bank Details", JOptionPane.OK_CANCEL_OPTION);
+
+        if (result == JOptionPane.OK_OPTION) {
+            // 获取用户输入的银行信息
+            String cardHolderName = cardHolderNameField.getText();
+            String cardNumber = cardNumberField.getText();
+            String cvv = cvvField.getText();
+            String expiryDate = expiryDateField.getText();
+
+            // 保存银行信息到数据库
+            saveBankDetailsToDatabase(cardHolderName, cardNumber, cvv, expiryDate);
+
+            // 显示订单确认信息
+            JOptionPane.showMessageDialog(this, "Order confirmed! Bank details:\n" +
+                    "Cardholder Name: " + cardHolderName + "\n" +
+                    "Card Number: " + cardNumber + "\n" +
+                    "CVV: " + cvv + "\n" +
+                    "Expiry Date: " + expiryDate);
+        }
+    }
+
+    // 保存银行信息到数据库
+    private void saveBankDetailsToDatabase(String cardHolderName, String cardNumber, String cvv, String expiryDate) {
+        try {
+            Connection connection = DatabaseConnection.getConnection();
+            String query = "INSERT INTO bank_details (user_email, card_holder_name, card_number, cvv, expiry_date) VALUES (?, ?, ?, ?, ?)";
+            try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+                // 这里假设 user_email 是对应用户的唯一标识，你可能需要根据实际情况修改
+                // 例如，可以在用户登录时从数据库中获取 user_email，并将其存储在 Cart 类中
+                String userEmail = "54321@qq.com"; // 替换为实际的用户邮箱
+
+                preparedStatement.setString(1, userEmail);
+                preparedStatement.setString(2, cardHolderName);
+                preparedStatement.setString(3, cardNumber);
+                preparedStatement.setString(4, cvv);
+                preparedStatement.setString(5, expiryDate);
+
+                int rowsAffected = preparedStatement.executeUpdate();
+                if (rowsAffected > 0) {
+                    System.out.println("Bank details saved to database. Rows affected: " + rowsAffected);
+                } else {
+                    System.out.println("Failed to save bank details to database. No rows affected.");
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
     // 返回购物界面
-    private void returnToShopping() {
+   private void returnToShopping() {
         // Instantiate the Customer class
-        Customer customer = new Customer();
+        //Customer customer = new Customer();
 
         // Show the Customer frame
-        customer.setVisible(true);
+        //customer.setVisible(true);
 
         // Close the current Cart frame
         dispose();
@@ -216,4 +289,26 @@ private void saveBankDetailsToDatabase(String cardHolderName, String cardNumber,
             new Cart(testCart);
         });
     }
+
+
+    // This method adds order details to the order_history table
+    public void addOrderToHistory(String user_email, String product_code, int quantity) {
+        try (Connection conn = DatabaseConnection.getConnection()) {
+            String sql = "INSERT INTO order_history (user_email, product_code, quantity) VALUES (?, ?, ?)";
+            try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
+                pstmt.setString(1, user_email);
+                pstmt.setString(2, product_code);
+                pstmt.setInt(3, quantity);
+                
+                int affectedRows = pstmt.executeUpdate();
+                if (affectedRows == 0) {
+                    throw new SQLException("Creating order failed, no rows affected.");
+                }
+            }
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+        }
+    }
 }
+
+
