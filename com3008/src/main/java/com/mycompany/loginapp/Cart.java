@@ -162,7 +162,14 @@ public class Cart extends JFrame {
 
     // 返回购物界面
     private void returnToShopping() {
-        dispose(); // 关闭当前界面
+        // Instantiate the Customer class
+        Customer customer = new Customer();
+
+        // Show the Customer frame
+        customer.setVisible(true);
+
+        // Close the current Cart frame
+        dispose();
     }
 
     public static void main(String[] args) {

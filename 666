@@ -185,7 +185,7 @@ public class Cart extends JFrame {
             e.printStackTrace();
         }
 
-        JOptionPane.showMessageDialog(this, "Order confirmed! Bank details:\n" +
+        JOptionPane.showMessageDialog(this, "Order confirmed!\n" +
                 "Cardholder Name: " + cardHolderName + "\n" +
                 "Card Number: " + cardNumber + "\n" +
                 "CVV: " + cvv + "\n" +
