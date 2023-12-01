@@ -25,7 +25,11 @@ public class EditProfileFrame extends JFrame {
         phoneNumberField = new JTextField(userInfo[2], 10);
         livingAddressField = new JTextField(userInfo[3], 50);
 
-        
+        // JTextField firstNameField = new JTextField();
+        // JTextField lastNameField = new JTextField();
+        // JTextField phoneNumberField = new JTextField();
+        // JTextField livingAddressField = new JTextField();
+
 
         // 创建标签和按钮
         JLabel firstNameLabel = new JLabel("First Name:");
@@ -175,6 +179,6 @@ public class EditProfileFrame extends JFrame {
             new EditProfileFrame(userID, role, parentFrame);
         });
     }
-
+    
     
 }

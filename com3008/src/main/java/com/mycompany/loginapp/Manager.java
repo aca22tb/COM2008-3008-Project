@@ -4,6 +4,8 @@ import javax.swing.*;
 import java.awt.*;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 public class Manager extends JFrame {
 
@@ -21,7 +23,7 @@ public class Manager extends JFrame {
         viewOrderHistoryButton = createStyledButton("View Order History");
         profileButton = createStyledButton("Profile Page");
         logoutButton = createStyledButton("Log Out");
-        goToCustomerPageButton = createStyledButton("Go to Customer Page");
+        goToCustomerPageButton = createStyledButton("Customer Page");
 
         // 添加按钮监听器
         promoteUserButton.addActionListener(e -> promoteUserToStaff());
@@ -31,6 +33,12 @@ public class Manager extends JFrame {
         goToCustomerPageButton.addActionListener(e -> openCustomerPage());
         profileButton.addActionListener(e -> showProfileDialog());
         logoutButton.addActionListener(e -> showLogoutDialog());
+
+        profileButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                showProfileDialog();}
+        });
 
         // 顶部面板
         JPanel topPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 10));
@@ -48,7 +56,7 @@ public class Manager extends JFrame {
         pagesPanel.add(createLabelAndButtonPanel("Demote a Staff Member", demoteStaffButton));
         pagesPanel.add(createLabelAndButtonPanel("View Current Orders", viewOrdersButton));
         pagesPanel.add(createLabelAndButtonPanel("View Order History", viewOrderHistoryButton));
-        pagesPanel.add(createLabelAndButtonPanel("Go to Customer Page", goToCustomerPageButton));
+        pagesPanel.add(createLabelAndButtonPanel("Customer Page", goToCustomerPageButton));
         pagesPanel.add(createLabelAndButtonPanel("Profile Page", profileButton));
 
         // 布局设置
@@ -59,6 +67,7 @@ public class Manager extends JFrame {
 
         setVisible(true);
     }
+
 
     // 创建带有标签和按钮的面板
     private JPanel createLabelAndButtonPanel(String labelText, JButton button) {
@@ -151,6 +160,7 @@ public class Manager extends JFrame {
         dispose();
     }
 
+
     private void showProfileDialog() {
         // JOptionPane.showMessageDialog(this, "Showing Profile Dialog...");
         JDialog profileDialog = new JDialog(this, "Profile Page", true);
@@ -186,7 +196,6 @@ public class Manager extends JFrame {
         new EditProfileFrame(managerID, "manager", this);
     }
     
-
     private void showLogoutDialog() {
         int option = JOptionPane.showConfirmDialog(
                 this,
