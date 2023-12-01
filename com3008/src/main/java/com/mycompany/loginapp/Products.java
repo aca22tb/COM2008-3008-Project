@@ -76,38 +76,43 @@ public class Products {
     }
 
     private void addRowToTable(String brand, String name, String code, double price) {
-        Object[] rowData = {brand, name, code, price};
-        model.addRow(rowData);
+    // Assume initial stock for each product is 5
+    int initialStock = 5;
 
-        // Insert into the database
-        insertIntoDatabase(brand, name, code, price);
-    }
+    Object[] rowData = {brand, name, code, price};
+    model.addRow(rowData);
 
-    private void insertIntoDatabase(String brand, String name, String code, double price) {
-        // Database connection parameters
-        try {
+    // Insert into the database
+    insertIntoDatabase(brand, name, code, price, initialStock);
+}
+
+private void insertIntoDatabase(String brand, String name, String code, double price, int stock) {
+    // Database connection parameters
+    try {
         Class.forName("com.mysql.cj.jdbc.Driver");
-        } catch (ClassNotFoundException e) {
+    } catch (ClassNotFoundException e) {
         e.printStackTrace();
     }
 
-        String url = "jdbc:mysql://stusql.dcs.shef.ac.uk/team056";
-        String username = "team056";
-        String password = "ohr4Kahbi";
+    String url = "jdbc:mysql://stusql.dcs.shef.ac.uk/team056";
+    String username = "team056";
+    String password = "ohr4Kahbi";
 
-        try (Connection connection = DriverManager.getConnection(url, username, password)) {
-            String query = "INSERT INTO products (brand, name, code, price) VALUES (?, ?, ?, ?)";
-            try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
-                preparedStatement.setString(1, brand);
-                preparedStatement.setString(2, name);
-                preparedStatement.setString(3, code);
-                preparedStatement.setDouble(4, price);
-                int rowsAffected = preparedStatement.executeUpdate();
-                if (rowsAffected > 0) {
-                    System.out.println("Insert successful. Rows affected: " + rowsAffected);
-            }   else {
-                    System.out.println("Insert failed. No rows affected.");
-            }   
+    try (Connection connection = DriverManager.getConnection(url, username, password)) {
+        String query = "INSERT INTO products (brand, name, code, price, stock) VALUES (?, ?, ?, ?, ?)";
+        try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+            preparedStatement.setString(1, brand);
+            preparedStatement.setString(2, name);
+            preparedStatement.setString(3, code);
+            preparedStatement.setDouble(4, price);
+            preparedStatement.setInt(5, stock);
+            
+            int rowsAffected = preparedStatement.executeUpdate();
+            if (rowsAffected > 0) {
+                System.out.println("Insert successful. Rows affected: " + rowsAffected);
+            } else {
+                System.out.println("Insert failed. No rows affected.");
+            }
         }
     } catch (SQLException e) {
         System.err.println("SQLException: " + e.getMessage());
@@ -115,10 +120,12 @@ public class Products {
     }
 }
 
+
     public static void main(String[] args) {
         SwingUtilities.invokeLater(Products::new);
     }
-
-    public void setVisible(boolean b) {
+    
+    public void setVisible (boolean b ){
+        
     }
 }
