@@ -4,6 +4,8 @@ import javax.swing.*;
 import java.awt.*;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 public class Manager extends JFrame {
 
@@ -21,7 +23,7 @@ public class Manager extends JFrame {
         viewOrderHistoryButton = createStyledButton("View Order History");
         profileButton = createStyledButton("Profile Page");
         logoutButton = createStyledButton("Log Out");
-        goToCustomerPageButton = createStyledButton("Go to Customer Page");
+        goToCustomerPageButton = createStyledButton("Customer Page");
 
         // 添加按钮监听器
         promoteUserButton.addActionListener(e -> promoteUserToStaff());
@@ -31,6 +33,12 @@ public class Manager extends JFrame {
         goToCustomerPageButton.addActionListener(e -> openCustomerPage());
         profileButton.addActionListener(e -> showProfileDialog());
         logoutButton.addActionListener(e -> showLogoutDialog());
+
+        profileButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                showProfileDialog();}
+        });
 
         // 顶部面板
         JPanel topPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 10));
@@ -48,7 +56,7 @@ public class Manager extends JFrame {
         pagesPanel.add(createLabelAndButtonPanel("Demote a Staff Member", demoteStaffButton));
         pagesPanel.add(createLabelAndButtonPanel("View Current Orders", viewOrdersButton));
         pagesPanel.add(createLabelAndButtonPanel("View Order History", viewOrderHistoryButton));
-        pagesPanel.add(createLabelAndButtonPanel("Go to Customer Page", goToCustomerPageButton));
+        pagesPanel.add(createLabelAndButtonPanel("Customer Page", goToCustomerPageButton));
         pagesPanel.add(createLabelAndButtonPanel("Profile Page", profileButton));
 
         // 布局设置
@@ -58,6 +66,116 @@ public class Manager extends JFrame {
         add(bottomPanel, BorderLayout.SOUTH);
 
         setVisible(true);
+    }
+
+    private void showProfileDialog() {
+        // Create a dialog to display the profile information
+        JDialog profileDialog = new JDialog(this, "Profile Page", true);
+        profileDialog.setSize(400, 300);
+
+        // Add components to the profile dialog
+        JLabel nameLabel = new JLabel("Name: John Doe");  // Replace with actual user information
+        JLabel emailLabel = new JLabel("Email: john.doe@example.com");  // Replace with actual user information
+
+        JButton editButton = new JButton("Edit Profile");
+        editButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                // Open a new dialog for editing the profile (you need to implement this)
+                showEditProfileDialog();
+            }
+        });
+
+        // Add components to the profile dialog's content pane
+        JPanel profilePanel = new JPanel(new GridLayout(10, 1));
+        profilePanel.add(nameLabel);
+        profilePanel.add(emailLabel);
+        profilePanel.add(editButton);
+
+        profileDialog.getContentPane().add(profilePanel);
+        profileDialog.setLocationRelativeTo(this);
+        profileDialog.setVisible(true);
+    }
+
+    private void showEditProfileDialog() {
+        // Create a modal dialog
+        JDialog editProfileDialog = new JDialog(this, "Edit Profile", true);
+        editProfileDialog.setSize(400, 300);
+        editProfileDialog.setLayout(new GridLayout(8, 2)); // Adjust the layout based on your needs
+
+        // Components for user input
+        JTextField firstNameField = new JTextField();
+        JTextField lastNameField = new JTextField();
+        JTextField emailField = new JTextField();
+        JTextField passwordField = new JPasswordField();
+        JTextField phoneField = new JTextField();
+        JTextField addressField = new JTextField();
+        JTextField bankDetailsField = new JTextField();
+        JButton saveButton = new JButton("Save");
+
+        // Retrieve current user information (replace with actual data retrieval logic)
+        String currentFirstName = "FirstName";
+        String currentLastName = "LastName";
+        String currentEmail = "Email";
+        String currentPassword = "Password";
+        String currentPhone = "Phone";
+        String currentAddress = "Address";
+        String currentBankDetails = "BankDetails";
+
+        // Set default values to the input fields
+        firstNameField.setText(currentFirstName);
+        lastNameField.setText(currentLastName);
+        emailField.setText(currentEmail);
+        passwordField.setText(currentPassword);
+        phoneField.setText(currentPhone);
+        addressField.setText(currentAddress);
+        bankDetailsField.setText(currentBankDetails);
+
+        // Add components to the dialog
+        editProfileDialog.add(new JLabel("First Name:"));
+        editProfileDialog.add(firstNameField);
+        editProfileDialog.add(new JLabel("Last Name:"));
+        editProfileDialog.add(lastNameField);
+        editProfileDialog.add(new JLabel("Email:"));
+        editProfileDialog.add(emailField);
+        editProfileDialog.add(new JLabel("Password:"));
+        editProfileDialog.add(passwordField);
+        editProfileDialog.add(new JLabel("Phone:"));
+        editProfileDialog.add(phoneField);
+        editProfileDialog.add(new JLabel("Address:"));
+        editProfileDialog.add(addressField);
+        editProfileDialog.add(new JLabel("Bank Details:"));
+        editProfileDialog.add(bankDetailsField);
+        editProfileDialog.add(new JLabel()); // Empty label for spacing
+        editProfileDialog.add(saveButton);
+
+        // Add action listener to the save button
+        saveButton.addActionListener(e -> {
+            // Retrieve values from input fields
+            String newFirstName = firstNameField.getText();
+            String newLastName = lastNameField.getText();
+            String newEmail = emailField.getText();
+            String newPassword = passwordField.getText();
+            String newPhone = phoneField.getText();
+            String newAddress = addressField.getText();
+            String newBankDetails = bankDetailsField.getText();
+
+            // Update the user information (replace with actual update logic)
+            // For simplicity, let's just print the updated information
+            System.out.println("Updated First Name: " + newFirstName);
+            System.out.println("Updated Last Name: " + newLastName);
+            System.out.println("Updated Email: " + newEmail);
+            System.out.println("Updated Password: " + newPassword);
+            System.out.println("Updated Phone: " + newPhone);
+            System.out.println("Updated Address: " + newAddress);
+            System.out.println("Updated Bank Details: " + newBankDetails);
+
+            // Close the dialog
+            editProfileDialog.dispose();
+        });
+
+        // Set the dialog to be visible
+        editProfileDialog.setVisible(true);
     }
 
     // 创建带有标签和按钮的面板
@@ -149,11 +267,6 @@ public class Manager extends JFrame {
         Customer customerPage = new Customer();
         customerPage.setVisible(true);
         dispose();
-    }
-
-    private void showProfileDialog() {
-        // TODO: Add code for showing the profile dialog
-        JOptionPane.showMessageDialog(this, "Showing Profile Dialog...");
     }
 
     private void showLogoutDialog() {
